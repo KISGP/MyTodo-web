@@ -1,50 +1,35 @@
-# React + TypeScript + Vite
+# 清单（项目工程实践项目）
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+这是一个简单的清单应用程序，旨在帮助用户管理他们的任务和事项。用户可以添加、编辑和删除任务。
 
-Currently, two official plugins are available:
+页面设计来源于[新版QQ邮箱](https://mdnice.com/writing/a045df0e670e426aa8957858cf27f49b)和[滴答清单](https://dida365.com/)。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+项目预览: [https://project.kisssssssss.space/todo](https://project.kisssssssss.space/todo)
 
-## Expanding the ESLint configuration
+# 使用到的技术
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- 基础技术: [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- CSS框架: [tailwindcss](https://www.tailwindcss.cn/)
+- UI框架: [NextUI](https://nextui.org/)
+- 富文本编辑器: [Lexical](https://lexical.dev/)
+- 构建工具: [vite](https://vitejs.dev/)
 
-- Configure the top-level `parserOptions` property like this:
+# 功能需求
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+1. 待办清单
+2. 看板
+3. 日历
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+# 项目运行
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+1. 安装依赖
+  
+    ``` 
+    npm i
+    ```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+2. 运行项目
+  
+    ``` 
+    npm run dev
+    ```
