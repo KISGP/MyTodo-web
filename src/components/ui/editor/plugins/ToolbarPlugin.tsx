@@ -20,6 +20,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import UndoButton from "../ui/undo-button.tsx";
 import RedoButton from "../ui/redo-button.tsx";
 import BoldButton from "../ui/bold-button.tsx";
+import CodeButton from "../ui/code-button.tsx";
 import LinkButton, { getSelectedNode } from "../ui/link-button.tsx";
 import ItalicButton from "../ui/italic-button.tsx";
 import UnderlineButton from "../ui/underline-button.tsx";
@@ -35,6 +36,7 @@ export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [isCode, setIsCode] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -46,6 +48,7 @@ export default function ToolbarPlugin() {
     if ($isRangeSelection(selection)) {
       // Update text format
       setIsBold(selection.hasFormat("bold"));
+      setIsCode(selection.hasFormat("code"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
       setIsStrikethrough(selection.hasFormat("strikethrough"));
@@ -149,6 +152,12 @@ export default function ToolbarPlugin() {
         active={isStrikethrough}
         onClick={() => {
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+        }}
+      />
+      <CodeButton
+        active={isCode}
+        onClick={() => {
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
         }}
       />
       <LinkButton

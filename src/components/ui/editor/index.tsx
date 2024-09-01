@@ -41,6 +41,7 @@ function Placeholder() {
         "支持水平对齐方式",
         "支持文本加粗，斜体，下划线，删除线",
         "支持撤销/重做（ctrl+Z / ctrl+Y）",
+        "支持代码块",
         "支持链接（选中文字后点击工具栏链接按钮，输入链接地址，按下 Enter 键保存输入）",
       ].map((item) => {
         return <p className="mb-2">{item}</p>;
