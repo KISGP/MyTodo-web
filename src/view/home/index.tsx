@@ -8,9 +8,11 @@ import ThemeButton from "@/components/ui/theme-button";
 import Menu, { type MenuItemProps } from "@/components/ui/menu";
 import TodoIcon from "@/assets/svg/todo.svg?react";
 import CalendarIcon from "@/assets/svg/calendar.svg?react";
+import BoardsIcon from "@/assets/svg/boards.svg?react";
 
 const Menus: MenuItemProps[] = [
   { path: "/", Icon: TodoIcon, title: "待办清单" },
+  { path: "/boards", Icon: BoardsIcon, title: "看板" },
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
 ];
 

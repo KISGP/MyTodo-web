@@ -113,46 +113,92 @@
   margin-bottom: 0;
 }
 
-.editor-heading-h1 {
-  font-size: 24px;
-  color: rgb(5, 5, 5);
-  font-weight: 400;
-  margin: 0;
-  margin-bottom: 12px;
+/* 标题设置 */
+.heading {
+  color: #18181b;
   padding: 0;
+}
+
+.dark .heading {
+  color: #e4e4e7;
+}
+
+.editor-heading-h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 750;
+  margin-top: 12px;
+  margin-bottom: 14px;
 }
 
 .editor-heading-h2 {
-  font-size: 15px;
-  color: rgb(101, 103, 107);
-  font-weight: 700;
-  margin: 0;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 750;
   margin-top: 10px;
-  padding: 0;
-  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
+.editor-heading-h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.editor-heading-h4 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 650;
+  margin-top: 6px;
+  margin-bottom: 8px;
+}
+
+.editor-heading-h5 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.editor-heading-h6 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 550;
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+/* 引用块 */
 .editor-quote {
   margin: 0;
   margin-left: 20px;
   font-size: 15px;
-  color: rgb(101, 103, 107);
+  color: #a1a1aa;
   border-left-color: rgb(206, 208, 212);
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
 }
 
+.dark .editor-quote {
+  color: #71717a;
+}
+
 .editor-list-ol {
   padding: 0;
   margin: 0;
   margin-left: 16px;
+  list-style-type: decimal;
 }
 
 .editor-list-ul {
   padding: 0;
   margin: 0;
   margin-left: 16px;
+  list-style-type: disc;
 }
 
 .editor-listitem {

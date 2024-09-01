@@ -8,10 +8,14 @@ import Home from "@/view/home/index.tsx";
 import Todo from "@/view/home/todo.tsx";
 // const Calendar = lazy(() => import("@/view/home/calendar.tsx"));
 import Calendar from "@/view/home/calendar.tsx";
-const User = lazy(() => import("@/view/home/user.tsx"));
+
+import Boards from "@/view/home/boards.tsx";
+// const User = lazy(() => import("@/view/home/user.tsx"));
+import User from "@/view/home/user.tsx";
 // const Login = lazy(() => import("@/view/login.tsx"));
 import Login from "@/view/login.tsx";
-const NotFound = lazy(() => import("@/view/NotFound.tsx"));
+// const NotFound = lazy(() => import("@/view/NotFound.tsx"));
+import NotFound from "@/view/NotFound.tsx";
 
 const routes: RouteObject[] = [
   {
@@ -23,6 +27,14 @@ const routes: RouteObject[] = [
         element: (
           // <Loading>
           <Todo />
+          // </Loading>
+        ),
+      },
+      {
+        path: "boards",
+        element: (
+          // <Loading>
+          <Boards />
           // </Loading>
         ),
       },
