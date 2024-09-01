@@ -58,7 +58,7 @@ const blockTypeToBlockName: { [key: string]: string } = {
   h5: "五级标题",
   ol: "有序列表",
   ul: "无序列表",
-  code: "Code Block",
+  code: "代码块",
   paragraph: "段落",
 };
 
