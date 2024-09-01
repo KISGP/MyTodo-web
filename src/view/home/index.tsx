@@ -30,11 +30,11 @@ const index = memo(() => {
       </header>
 
       <main className="flex size-full flex-row">
-        <div id="sidebar" className="h-full w-[200px] px-3">
+        <div id="sidebar" className="h-full w-[200px] min-w-[200px] px-3">
           <Menu menus={Menus} />
         </div>
 
-        <div className="mr-2 flex-grow rounded-tl-2xl rounded-tr-2xl bg-content1 px-2">
+        <div className="mr-2 flex-grow rounded-tl-2xl rounded-tr-2xl bg-content1 pl-2">
           <Outlet />
         </div>
       </main>

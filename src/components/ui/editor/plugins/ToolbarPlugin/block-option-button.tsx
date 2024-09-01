@@ -21,6 +21,9 @@ import ParagraphIcon from "@/assets/svg/text-paragraph.svg?react";
 import H1Icon from "@/assets/svg/type-h1.svg?react";
 import H2Icon from "@/assets/svg/type-h2.svg?react";
 import H3Icon from "@/assets/svg/type-h3.svg?react";
+import H4Icon from "@/assets/svg/type-h4.svg?react";
+import H5Icon from "@/assets/svg/type-h5.svg?react";
+import H6Icon from "@/assets/svg/type-h6.svg?react";
 import ChatSquareQuoteIcon from "@/assets/svg/chat-square-quote.svg?react";
 import ListUlIcon from "@/assets/svg/list-ul.svg?react";
 import ListOlIcon from "@/assets/svg/list-ol.svg?react";
@@ -32,6 +35,10 @@ const supportedBlockTypes = new Set([
   "code",
   "h1",
   "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
   "ul",
   "ol",
 ]);
@@ -42,6 +49,9 @@ const blockTypeToIcon: {
   h1: H1Icon,
   h2: H2Icon,
   h3: H3Icon,
+  h4: H4Icon,
+  h5: H5Icon,
+  h6: H6Icon,
   code: CodeIcon,
   ul: ListUlIcon,
   ol: ListOlIcon,
@@ -56,6 +66,7 @@ const blockTypeToBlockName: { [key: string]: string } = {
   h3: "三级标题",
   h4: "四级标题",
   h5: "五级标题",
+  h6: "六级标题",
   ol: "有序列表",
   ul: "无序列表",
   code: "代码块",
@@ -152,6 +163,66 @@ function BlockOptionsDropdownList({
 
             if ($isRangeSelection(selection)) {
               $setBlocksType(selection, () => $createHeadingNode("h2"));
+            }
+          });
+        }
+        setShowBlockOptionsDropDown(false);
+      },
+    },
+    {
+      type: "h3",
+      onClick: () => {
+        if (blockType !== "h3") {
+          editor.update(() => {
+            const selection = $getSelection();
+
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createHeadingNode("h3"));
+            }
+          });
+        }
+        setShowBlockOptionsDropDown(false);
+      },
+    },
+    {
+      type: "h4",
+      onClick: () => {
+        if (blockType !== "h4") {
+          editor.update(() => {
+            const selection = $getSelection();
+
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createHeadingNode("h4"));
+            }
+          });
+        }
+        setShowBlockOptionsDropDown(false);
+      },
+    },
+    {
+      type: "h5",
+      onClick: () => {
+        if (blockType !== "h5") {
+          editor.update(() => {
+            const selection = $getSelection();
+
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createHeadingNode("h5"));
+            }
+          });
+        }
+        setShowBlockOptionsDropDown(false);
+      },
+    },
+    {
+      type: "h6",
+      onClick: () => {
+        if (blockType !== "h6") {
+          editor.update(() => {
+            const selection = $getSelection();
+
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createHeadingNode("h6"));
             }
           });
         }

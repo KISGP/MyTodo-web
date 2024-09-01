@@ -3,9 +3,25 @@ import { Navigate, type RouteObject } from "react-router-dom";
 
 // import Loading from "@/components/ui/loading";
 
+// 模拟延迟函数
+// const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// 包装 lazy 函数，添加延迟
+// const lazyWithDelay = (
+//   importFunc: () => Promise<{ default: React.ComponentType<any> }>,
+//   delayMs: number,
+// ) => {
+//   return lazy(() =>
+//     Promise.all([importFunc(), delay(delayMs)]).then(
+//       ([moduleExports]) => moduleExports,
+//     ),
+//   );
+// };
+
 import Home from "@/view/home/index.tsx";
 // const Todo = lazy(() => import("@/view/home/todo.tsx"));
 import Todo from "@/view/home/todo.tsx";
+// const Todo = lazyWithDelay(() => import("@/view/home/todo.tsx"), 100000);
 // const Calendar = lazy(() => import("@/view/home/calendar.tsx"));
 import Calendar from "@/view/home/calendar.tsx";
 

@@ -1,7 +1,7 @@
 // 插件
 import { CodeNode } from "@lexical/code";
-import { LinkNode } from "@lexical/link";
 import { TRANSFORMERS } from "@lexical/markdown";
+import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
@@ -13,9 +13,11 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
+import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
+import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 
 // 自定义插件
-import ToolbarPlugin from "./plugins/ToolbarPlugin.tsx";
+import ToolbarPlugin from "./plugins/ToolbarPlugin/index.tsx";
 
 // 样式
 import theme from "./theme.ts";
@@ -23,11 +25,19 @@ import "./editor.css";
 
 const editorConfig = {
   namespace: "Editor",
-  nodes: [HeadingNode, QuoteNode, CodeNode, ListNode, ListItemNode, LinkNode],
   theme,
   onError(error: Error) {
     throw error;
   },
+  nodes: [
+    HeadingNode,
+    QuoteNode,
+    CodeNode,
+    ListNode,
+    ListItemNode,
+    LinkNode,
+    AutoLinkNode,
+  ],
 };
 
 function Placeholder() {
@@ -43,12 +53,35 @@ function Placeholder() {
         "支持撤销/重做（ctrl+Z / ctrl+Y）",
         "支持代码块",
         "支持链接（选中文字后点击工具栏链接按钮，输入链接地址，按下 Enter 键保存输入）",
-      ].map((item) => {
-        return <p className="mb-2">{item}</p>;
+      ].map((item, index) => {
+        return (
+          <p key={index} className="mb-2">
+            {item}
+          </p>
+        );
       })}
     </div>
   );
 }
+
+const MATCHERS = [
+  (text: any) => {
+    const URL_MATCHER =
+      /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+    const match = URL_MATCHER.exec(text);
+    if (match === null) {
+      return null;
+    }
+    const fullMatch = match[0];
+    return {
+      index: match.index,
+      length: fullMatch.length,
+      text: fullMatch,
+      url: fullMatch.startsWith("http") ? fullMatch : `https://${fullMatch}`,
+      attributes: { rel: "noreferrer", target: "_blank" },
+    };
+  },
+];
 
 export default function Editor() {
   return (
@@ -70,6 +103,8 @@ export default function Editor() {
           <LinkPlugin />
           <HistoryPlugin />
           <AutoFocusPlugin />
+          <ClearEditorPlugin />
+          <AutoLinkPlugin matchers={MATCHERS} />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         </div>
       </div>

@@ -189,7 +189,7 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
             href={linkUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mr-7 inline-block overflow-hidden overflow-ellipsis whitespace-nowrap text-primary-500 hover:underline"
+            className="w-64 inline-block overflow-hidden overflow-ellipsis whitespace-nowrap text-primary-500 hover:underline"
           >
             {linkUrl}
           </a>

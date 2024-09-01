@@ -10,7 +10,7 @@ const ResizeBox: React.FC<{
       <Resizable
         className="size-full border-r-1 border-default-300 dark:border-default-200"
         maxWidth="60%"
-        minWidth="20%"
+        minWidth="200px"
         minHeight="100%"
         maxHeight="100%"
         defaultSize={{

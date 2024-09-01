@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Divider } from "@nextui-org/react";
+import { Divider, useDisclosure } from "@nextui-org/react";
 import { $isListNode, ListNode } from "@lexical/list";
 import { $isHeadingNode } from "@lexical/rich-text";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -15,24 +15,26 @@ import {
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
+  CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
 } from "lexical";
 import { exportFile, importFile } from "@lexical/file";
 
-import UndoButton from "../ui/undo-button.tsx";
-import RedoButton from "../ui/redo-button.tsx";
-import BoldButton from "../ui/bold-button.tsx";
-import CodeButton from "../ui/code-button.tsx";
-import BlockOptionButton from "../ui/block-option-button.tsx";
-import LinkButton, { getSelectedNode } from "../ui/link-button.tsx";
-import ItalicButton from "../ui/italic-button.tsx";
-import UnderlineButton from "../ui/underline-button.tsx";
-import LeftAlignIconButton from "../ui/left-button.tsx";
-import CenterAlignIconButton from "../ui/center-button.tsx";
-import RightAlignIconButton from "../ui/right-button.tsx";
-import StrikethroughButton from "../ui/strikethrough-button.tsx";
-import ImportButton from "../ui/import-button.tsx";
-import ExportButton from "../ui/export-button.tsx";
+import UndoButton from "./undo-button.tsx";
+import RedoButton from "./redo-button.tsx";
+import BoldButton from "./bold-button.tsx";
+import CodeButton from "./code-button.tsx";
+import BlockOptionButton from "./block-option-button.tsx";
+import LinkButton, { getSelectedNode } from "./link-button.tsx";
+import ItalicButton from "./italic-button.tsx";
+import UnderlineButton from "./underline-button.tsx";
+import LeftAlignIconButton from "./left-button.tsx";
+import CenterAlignIconButton from "./center-button.tsx";
+import RightAlignIconButton from "./right-button.tsx";
+import StrikethroughButton from "./strikethrough-button.tsx";
+import ImportButton from "./import-button.tsx";
+import ExportButton from "./export-button.tsx";
+import ClearButton from "./clear-button.tsx";
 
 const LowPriority = 1;
 
@@ -48,6 +50,8 @@ export default function ToolbarPlugin() {
   const [blockType, setBlockType] = useState("paragraph");
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -224,6 +228,15 @@ export default function ToolbarPlugin() {
         />
       </div>
       <div className="flex items-center">
+        <ClearButton
+          onClick={onOpen}
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          clear={() => {
+            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+            editor.focus();
+          }}
+        />
         <ImportButton onClick={() => importFile(editor)} />
         <ExportButton
           onClick={() => {

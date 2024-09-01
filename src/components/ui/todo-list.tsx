@@ -24,7 +24,7 @@ const TodoItem: React.FC<TodoItemProps> = memo(({ id, title, time }) => {
         label: "w-full",
       }}
     >
-      <div className="flex w-full justify-between">
+      <div className="flex w-full items-center justify-between">
         <span className="block font-semibold text-foreground/80">{title}</span>
         <span className="text-sm text-foreground/60">{time}</span>
       </div>
