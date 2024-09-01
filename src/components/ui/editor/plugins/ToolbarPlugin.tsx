@@ -17,6 +17,7 @@ import {
   UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
 } from "lexical";
+import { exportFile, importFile } from "@lexical/file";
 
 import UndoButton from "../ui/undo-button.tsx";
 import RedoButton from "../ui/redo-button.tsx";
@@ -30,6 +31,8 @@ import LeftAlignIconButton from "../ui/left-button.tsx";
 import CenterAlignIconButton from "../ui/center-button.tsx";
 import RightAlignIconButton from "../ui/right-button.tsx";
 import StrikethroughButton from "../ui/strikethrough-button.tsx";
+import ImportButton from "../ui/import-button.tsx";
+import ExportButton from "../ui/export-button.tsx";
 
 const LowPriority = 1;
 
@@ -134,90 +137,103 @@ export default function ToolbarPlugin() {
 
   return (
     <div
-      className="flex items-center rounded-r-xl px-3 py-1 align-middle dark:bg-default-100/50"
+      className="flex items-center justify-between px-3 py-1 align-middle dark:bg-default-100/50"
       ref={toolbarRef}
     >
-      <UndoButton
-        disabled={canUndo}
-        onClick={() => {
-          editor.dispatchCommand(UNDO_COMMAND, undefined);
-        }}
-      />
-      <RedoButton
-        disabled={canRedo}
-        onClick={() => {
-          editor.dispatchCommand(REDO_COMMAND, undefined);
-        }}
-      />
-      <Divider
-        orientation="vertical"
-        className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
-      />
-      <BlockOptionButton
-        editor={editor}
-        blockType={blockType}
-        toolbarRef={toolbarRef}
-      />
-      <BoldButton
-        active={isBold}
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-        }}
-      />
-      <ItalicButton
-        active={isItalic}
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-        }}
-      />
-      <UnderlineButton
-        active={isUnderline}
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-        }}
-      />
-      <StrikethroughButton
-        active={isStrikethrough}
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
-        }}
-      />
-      <CodeButton
-        active={isCode}
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
-        }}
-      />
-      <LinkButton
-        active={isLink}
-        editor={editor}
-        onClick={useCallback(() => {
-          if (!isLink) {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
-          } else {
-            editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-          }
-        }, [editor, isLink])}
-      />
-      <Divider
-        orientation="vertical"
-        className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
-      />
-      <LeftAlignIconButton
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
-        }}
-      />
-      <CenterAlignIconButton
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
-        }}
-      />
-      <RightAlignIconButton
-        onClick={() => {
-          editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
-        }}
-      />
+      <div className="flex items-center">
+        <UndoButton
+          disabled={canUndo}
+          onClick={() => {
+            editor.dispatchCommand(UNDO_COMMAND, undefined);
+          }}
+        />
+        <RedoButton
+          disabled={canRedo}
+          onClick={() => {
+            editor.dispatchCommand(REDO_COMMAND, undefined);
+          }}
+        />
+        <Divider
+          orientation="vertical"
+          className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
+        />
+        <BlockOptionButton
+          editor={editor}
+          blockType={blockType}
+          toolbarRef={toolbarRef}
+        />
+        <BoldButton
+          active={isBold}
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+          }}
+        />
+        <ItalicButton
+          active={isItalic}
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+          }}
+        />
+        <UnderlineButton
+          active={isUnderline}
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
+          }}
+        />
+        <StrikethroughButton
+          active={isStrikethrough}
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+          }}
+        />
+        <CodeButton
+          active={isCode}
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
+          }}
+        />
+        <LinkButton
+          active={isLink}
+          editor={editor}
+          onClick={useCallback(() => {
+            if (!isLink) {
+              editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+            } else {
+              editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+            }
+          }, [editor, isLink])}
+        />
+        <Divider
+          orientation="vertical"
+          className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
+        />
+        <LeftAlignIconButton
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
+          }}
+        />
+        <CenterAlignIconButton
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
+          }}
+        />
+        <RightAlignIconButton
+          onClick={() => {
+            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
+          }}
+        />
+      </div>
+      <div className="flex items-center">
+        <ImportButton onClick={() => importFile(editor)} />
+        <ExportButton
+          onClick={() => {
+            exportFile(editor, {
+              fileName: `Todo-${new Date().toISOString()}`,
+              source: "Playground",
+            });
+          }}
+        />
+      </div>
     </div>
   );
 }
