@@ -21,6 +21,7 @@ import UndoButton from "../ui/undo-button.tsx";
 import RedoButton from "../ui/redo-button.tsx";
 import BoldButton from "../ui/bold-button.tsx";
 import CodeButton from "../ui/code-button.tsx";
+import BlockOptionButton from "../ui/block-option-button.tsx";
 import LinkButton, { getSelectedNode } from "../ui/link-button.tsx";
 import ItalicButton from "../ui/italic-button.tsx";
 import UnderlineButton from "../ui/underline-button.tsx";
@@ -32,7 +33,7 @@ import StrikethroughButton from "../ui/strikethrough-button.tsx";
 const LowPriority = 1;
 
 export default function ToolbarPlugin() {
-  const toolbarRef = useRef(null);
+  const toolbarRef = useRef<HTMLDivElement>(null);
   const [editor] = useLexicalComposerContext();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -40,6 +41,7 @@ export default function ToolbarPlugin() {
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
+  const [blockType, setBlockType] = useState("paragraph");
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
 
@@ -128,7 +130,12 @@ export default function ToolbarPlugin() {
       />
       <Divider
         orientation="vertical"
-        className="mx-4 h-6 w-[1px] bg-default-300"
+        className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
+      />
+      <BlockOptionButton
+        editor={editor}
+        blockType={blockType}
+        toolbarRef={toolbarRef}
       />
       <BoldButton
         active={isBold}
@@ -173,7 +180,7 @@ export default function ToolbarPlugin() {
       />
       <Divider
         orientation="vertical"
-        className="mx-4 h-6 w-[1px] bg-default-300"
+        className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
       />
       <LeftAlignIconButton
         onClick={() => {

@@ -11,7 +11,7 @@ export default function LeftAlignIconButton({ onClick }: ToolbarButtonProps) {
     <button
       onClick={onClick}
       className={cn(
-        "group flex cursor-pointer align-middle",
+        "group flex cursor-pointer align-middle outline-none",
         "mr-[2px] gap-1 rounded-lg border-0 p-2",
         "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed",
       )}
