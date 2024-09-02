@@ -301,7 +301,7 @@ function BlockOptionsDropdownList({
             className={cn(
               "flex cursor-pointer items-center align-middle",
               "mb-1 w-full gap-1 rounded-lg p-2 last:mb-0",
-              "hover:bg-zinc-200/60 dark:hover:bg-zinc-800/80",
+              "text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/80",
             )}
           >
             <Icon className="mx-1 h-5 w-5" />
@@ -342,7 +342,7 @@ export default function BlockOptionButton({
           className={cn(
             "flex cursor-pointer items-center align-middle outline-none",
             "gap-1 rounded-lg border-0 p-2",
-            "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed",
+            "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed text-default-500 dark:text-default-400",
           )}
           onClick={() => setShowBlockOptionsDropDown(!showBlockOptionsDropDown)}
           aria-label="Formatting Options"

@@ -1,10 +1,21 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
+import { cn } from "@nextui-org/react";
+
+export const toolbarButtonClass = cn(
+  "group flex cursor-pointer align-middle outline-none",
+  "mr-[2px] gap-1 rounded-lg border-0 p-2",
+  "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed",
+);
+
+export const toolbarButtonActiveClass = cn("!bg-primary-100/60 dark:!bg-primary-500/30")
+
+export const toolbarIconClass = cn(
+  "inline-block bg-contain",
+  "mt-[2px] size-[18px] align-[-0.25em] opacity-60",
+  "group-active:opacity-100 group-disabled:opacity-20",
+);
+
+export const toolbarIconActiveClass = "!opacity-100";
+
 export default {
   code: "editor-code",
   heading: {

@@ -15,6 +15,13 @@ import {
 import LinkIcon from "@/assets/svg/link.svg?react";
 import EditIcon from "@/assets/svg/edit.svg?react";
 
+import {
+  toolbarIconClass,
+  toolbarButtonClass,
+  toolbarIconActiveClass,
+  toolbarButtonActiveClass,
+} from "../../theme";
+
 const LowPriority = 1;
 
 export function getSelectedNode(selection: RangeSelection) {
@@ -189,7 +196,7 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
             href={linkUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-64 inline-block overflow-hidden overflow-ellipsis whitespace-nowrap text-primary-500 hover:underline"
+            className="inline-block w-64 overflow-hidden overflow-ellipsis whitespace-nowrap text-primary-500 hover:underline"
           >
             {linkUrl}
           </a>
@@ -222,22 +229,12 @@ export default function LinkButton({
     <>
       <button
         onClick={onClick}
-        className={cn(
-          "group flex cursor-pointer align-middle outline-none",
-          "mr-[2px] gap-1 rounded-lg border-0 p-2",
-          "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed",
-          active && "!bg-primary-100/60 dark:!bg-primary-500/30",
-        )}
+        className={cn(toolbarButtonClass, active && toolbarButtonActiveClass)}
         aria-label="Link"
         title="Link"
       >
         <LinkIcon
-          className={cn(
-            "inline-block bg-contain",
-            "mt-[2px] size-[18px] align-[-0.25em] opacity-60",
-            "group-active:opacity-100 group-disabled:opacity-20",
-            active && "!opacity-100",
-          )}
+          className={cn(toolbarIconClass, active && toolbarIconActiveClass)}
         />
       </button>
       {active &&

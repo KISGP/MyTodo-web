@@ -17,7 +17,7 @@ const login = memo(() => {
         className="size-full"
         src={"https://w.wallhaven.cc/full/d6/wallhaven-d6y12l.jpg"}
       />
-      <div className="absolute left-0 top-0 z-10 flex h-full w-1/3 flex-col items-center justify-center rounded-r-xl bg-content1">
+      <div className="absolute right-0 top-0 z-10 flex h-full w-1/3 flex-col items-center justify-center rounded-l-xl bg-content1">
         <div className="flex w-3/5 flex-col items-center gap-4">
           <Input size="lg" type="email" label="Email" variant="faded" />
           <Input

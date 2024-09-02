@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Divider, useDisclosure } from "@nextui-org/react";
+import { useDisclosure } from "@nextui-org/react";
 import { $isListNode, ListNode } from "@lexical/list";
 import { $isHeadingNode } from "@lexical/rich-text";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -20,6 +20,8 @@ import {
 } from "lexical";
 import { exportFile, importFile } from "@lexical/file";
 
+import Divider from "../../ui/divider.tsx";
+
 import UndoButton from "./undo-button.tsx";
 import RedoButton from "./redo-button.tsx";
 import BoldButton from "./bold-button.tsx";
@@ -35,6 +37,7 @@ import StrikethroughButton from "./strikethrough-button.tsx";
 import ImportButton from "./import-button.tsx";
 import ExportButton from "./export-button.tsx";
 import ClearButton from "./clear-button.tsx";
+import InsertOptionButton from "./insert-option-button.tsx";
 
 const LowPriority = 1;
 
@@ -157,10 +160,7 @@ export default function ToolbarPlugin() {
             editor.dispatchCommand(REDO_COMMAND, undefined);
           }}
         />
-        <Divider
-          orientation="vertical"
-          className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
-        />
+        <Divider />
         <BlockOptionButton
           editor={editor}
           blockType={blockType}
@@ -207,10 +207,7 @@ export default function ToolbarPlugin() {
             }
           }, [editor, isLink])}
         />
-        <Divider
-          orientation="vertical"
-          className="mx-2 h-6 w-[1px] bg-default-300 dark:bg-default-200/80"
-        />
+        <Divider />
         <LeftAlignIconButton
           onClick={() => {
             editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
@@ -226,6 +223,8 @@ export default function ToolbarPlugin() {
             editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
           }}
         />
+        <Divider />
+        <InsertOptionButton editor={editor} />
       </div>
       <div className="flex items-center">
         <ClearButton
