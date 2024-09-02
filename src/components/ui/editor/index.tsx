@@ -19,7 +19,12 @@ import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 
 // 自定义插件
-import ToolbarPlugin from "./plugins/ToolbarPlugin/index.tsx";
+import ToolbarPlugin from "./plugins/toolbar-plugin/index.tsx";
+import BilibiliPlugin from "./plugins/bilibili-plugin.tsx";
+import AutoEmbedPlugin from "./plugins/embed-plugin.tsx";
+
+// 自定义结点
+import { BilibiliNode } from "./nodes/bilibili-node.tsx";
 
 // 样式
 import theme from "./theme.ts";
@@ -39,6 +44,7 @@ const editorConfig = {
     ListItemNode,
     LinkNode,
     AutoLinkNode,
+    BilibiliNode,
   ],
 };
 
@@ -56,6 +62,7 @@ function Placeholder() {
         "支持代码块",
         "支持链接（选中文字后点击工具栏链接按钮，输入链接地址，按下 Enter 键保存输入）",
         "支持链接自动识别",
+        "支持插入 Bilibili 视频",
       ].map((item, index) => {
         return (
           <p key={index} className="mb-2">
@@ -98,7 +105,7 @@ export default function Editor() {
                 className={cn(
                   "relative resize-none overflow-scroll rounded-xl outline-none",
                   "h-[calc(100vh_-_186px)] max-h-[calc(100vh_-_186px)] max-w-full px-3 py-4",
-                  "bg-default-50 dark:bg-default-100/50 caret-default-800",
+                  "bg-default-50 caret-default-800 dark:bg-default-100/50",
                 )}
                 aria-placeholder="输入待办详情"
                 placeholder={<Placeholder />}
@@ -109,7 +116,9 @@ export default function Editor() {
           <ListPlugin />
           <LinkPlugin />
           <HistoryPlugin />
+          <BilibiliPlugin />
           <AutoFocusPlugin />
+          <AutoEmbedPlugin />
           <ClearEditorPlugin />
           <AutoLinkPlugin matchers={MATCHERS} />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
