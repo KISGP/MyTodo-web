@@ -20,7 +20,7 @@ const index = memo(() => {
   return (
     <div className="relative flex h-screen w-screen flex-col bg-base-background">
       {/* 头部（搜索框 用户头像） */}
-      <header className="flex h-[60px] w-screen flex-row-reverse items-center justify-between pl-[200px] pr-4">
+      <header className="flex h-[60px] min-h-[60px] w-screen flex-row-reverse items-center justify-between pl-[200px] pr-4">
         <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
           <Avatar />
           <Divider orientation="vertical" className="mx-4 h-[65%]" />

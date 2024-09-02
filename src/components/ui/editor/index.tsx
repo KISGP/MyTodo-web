@@ -1,3 +1,5 @@
+import { cn } from "@nextui-org/react";
+
 // 插件
 import { CodeNode } from "@lexical/code";
 import { TRANSFORMERS } from "@lexical/markdown";
@@ -42,7 +44,7 @@ const editorConfig = {
 
 function Placeholder() {
   return (
-    <div className="pointer-events-none absolute left-3 top-4 select-none text-base text-default-500/60">
+    <div className="pointer-events-none absolute left-5 top-6 select-none text-base text-default-500/60">
       {[
         "输入待办详情~",
         "——————————————————————————————————————",
@@ -53,6 +55,7 @@ function Placeholder() {
         "支持撤销/重做（ctrl+Z / ctrl+Y）",
         "支持代码块",
         "支持链接（选中文字后点击工具栏链接按钮，输入链接地址，按下 Enter 键保存输入）",
+        "支持链接自动识别",
       ].map((item, index) => {
         return (
           <p key={index} className="mb-2">
@@ -88,11 +91,15 @@ export default function Editor() {
     <LexicalComposer initialConfig={editorConfig}>
       <div className="relative w-full text-left text-base font-normal dark:text-default-500/80">
         <ToolbarPlugin />
-        <div className="relative">
+        <div className="relative p-2">
           <RichTextPlugin
             contentEditable={
               <ContentEditable
-                className="relative h-[calc(100vh_-_168px)] max-h-[calc(100vh_-_168px)] max-w-full resize-none overflow-scroll px-3 py-4 caret-default-800 outline-none"
+                className={cn(
+                  "relative resize-none overflow-scroll rounded-xl outline-none",
+                  "h-[calc(100vh_-_186px)] max-h-[calc(100vh_-_186px)] max-w-full px-3 py-4",
+                  "bg-default-50 dark:bg-default-100/50 caret-default-800",
+                )}
                 aria-placeholder="输入待办详情"
                 placeholder={<Placeholder />}
               />
