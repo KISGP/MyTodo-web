@@ -14,12 +14,6 @@
 - 富文本编辑器: [Lexical](https://lexical.dev/)
 - 构建工具: [vite](https://vitejs.dev/)
 
-# 功能需求
-
-1. 待办清单
-2. 看板
-3. 日历
-
 # 项目运行
 
 1. 安装依赖
