@@ -46,7 +46,7 @@ const Sidebar: React.FC<{ menus: MenuItemProps[] }> = memo(({ menus }) => {
       <div
         id="sidebar"
         className={cn(
-          "flex h-full flex-col justify-between px-3 pb-3 transition-width",
+          "flex h-full flex-col justify-between px-3 pb-3 transition-width pt-[60px]",
           isCollapsed ? "w-[76px]" : "w-[200px]",
         )}
       >

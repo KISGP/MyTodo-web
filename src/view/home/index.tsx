@@ -16,28 +16,26 @@ const Menus: MenuItemProps[] = [
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
 ];
 
-const index = memo(() => {
+const Index = memo(() => {
   return (
-    <div className="relative flex h-screen w-screen flex-col bg-base-background">
-      {/* 头部（搜索框 用户头像） */}
-      <header className="flex h-[60px] min-h-[60px] w-screen flex-row-reverse items-center justify-between pl-[200px] pr-4">
-        <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
-          <Avatar />
-          <Divider orientation="vertical" className="mx-4 h-[65%]" />
-          <ThemeButton />
-        </div>
-        <Search />
-      </header>
+    <div className="relative flex h-screen w-screen bg-base-background">
+      <Sidebar menus={Menus} />
+      <div className="flex h-full w-full flex-col">
+        <header className="flex h-[60px] min-h-[60px] items-center justify-between">
+          <Search />
+          <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
+            <Avatar />
+            <Divider orientation="vertical" className="mx-4 h-[65%]" />
+            <ThemeButton />
+          </div>
+        </header>
 
-      <main className="flex size-full flex-row">
-        <Sidebar menus={Menus} />
-
-        <div className="mr-2 flex-grow overflow-hidden rounded-tl-2xl rounded-tr-2xl bg-content1">
+        <div className="mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1">
           <Outlet />
         </div>
-      </main>
+      </div>
     </div>
   );
 });
 
-export default index;
+export default Index;
