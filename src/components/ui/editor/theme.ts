@@ -3,14 +3,14 @@ import { cn } from "@nextui-org/react";
 export const toolbarButtonClass = cn(
   "group flex cursor-pointer align-middle outline-none",
   "mr-[2px] gap-1 rounded-lg border-0 p-2",
-  "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed",
+  "hover:bg-default-200 active:bg-default-300 disabled:cursor-not-allowed",
 );
 
-export const toolbarButtonActiveClass = cn("!bg-primary-100/60 dark:!bg-primary-500/30")
+export const toolbarButtonActiveClass = cn("!bg-primary-100/60 dark:!bg-primary-500/30");
 
 export const toolbarIconClass = cn(
   "inline-block bg-contain",
-  "mt-[2px] size-[18px] align-[-0.25em] opacity-60",
+  "mt-[2px] size-[18px] align-[-0.25em] opacity-70",
   "group-active:opacity-100 group-disabled:opacity-20",
 );
 

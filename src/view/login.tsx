@@ -1,59 +1,79 @@
-import { memo, useState } from "react";
+import { memo, useState, Key } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input, Button } from "@nextui-org/react";
+import { Tabs, Tab, Input, Link, Button } from "@nextui-org/react";
 
-import EyeFilledIcon from "@/assets/svg/eye-filled.svg?react";
-import EyeSlashFilledIcon from "@/assets/svg/eye-slash-filled.svg?react";
+import { useStore } from "@/store";
 
 const login = memo(() => {
   const navigate = useNavigate();
+  const [selected, setSelected] = useState<Key>("login");
 
-  const [isVisible, setIsVisible] = useState(false);
-  const toggleVisibility = () => setIsVisible(!isVisible);
+  const [loginAsGuest] = useStore((state) => [state.loginAsGuest]);
 
   return (
-    <div className="relative h-screen w-screen">
-      <img
-        className="size-full"
-        src={"https://w.wallhaven.cc/full/d6/wallhaven-d6y12l.jpg"}
-      />
-      <div className="absolute right-0 top-0 z-10 flex h-full w-1/3 flex-col items-center justify-center rounded-l-xl bg-content1">
-        <div className="flex w-3/5 flex-col items-center gap-4">
-          <Input size="lg" type="email" label="Email" variant="faded" />
-          <Input
-            size="lg"
-            label="Password"
-            variant="faded"
-            type={isVisible ? "text" : "password"}
-            endContent={
-              <button
-                className="focus:outline-none"
-                type="button"
-                onClick={toggleVisibility}
-                aria-label="toggle password visibility"
-              >
-                {isVisible ? (
-                  <EyeSlashFilledIcon className="pointer-events-none text-2xl text-default-400" />
-                ) : (
-                  <EyeFilledIcon className="pointer-events-none text-2xl text-default-400" />
-                )}
-              </button>
-            }
-          />
-          <Button color="primary" variant="solid" className="mb-6 w-full">
-            登录 / 注册
-          </Button>
-          <span className="w-full cursor-pointer px-2 text-sm text-primary-300 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400">
-            忘记密码
-          </span>
-          <span
-            onClick={() => {
-              navigate("/", { replace: true });
-            }}
-            className="w-full cursor-pointer px-2 text-sm text-primary-300 hover:text-primary-500 dark:text-primary-500 dark:hover:text-primary-400"
+    <div className="relative flex h-screen w-screen">
+      <div className="flex-grow">
+        <img className="size-full object-cover" src={"https://w.wallhaven.cc/full/d6/wallhaven-d6y12l.jpg"} />
+      </div>
+      <div className="flex w-[40%] flex-col justify-center bg-content1">
+        <div className="mx-auto h-[300px] w-4/5">
+          <Tabs
+            fullWidth
+            size="md"
+            aria-label="Tabs form"
+            selectedKey={selected as any}
+            onSelectionChange={setSelected}
           >
-            游客登录
-          </span>
+            <Tab key="login" title="登录">
+              <form className="flex flex-col gap-4">
+                <Input label="邮箱" type="email" />
+                <Input label="密码" type="password" />
+                <p className="text-center text-small">
+                  需要注册账号?{" "}
+                  <Link size="sm" onPress={() => setSelected("sign-up")}>
+                    注册
+                  </Link>
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button fullWidth color="primary">
+                    登录
+                  </Button>
+                </div>
+              </form>
+            </Tab>
+            <Tab key="sign-up" title="注册">
+              <form className="flex flex-col gap-4">
+                <Input label="邮箱" type="email" />
+                <Input label="密码" type="password" />
+                <p className="text-center text-small">
+                  已有账号?{" "}
+                  <Link size="sm" onPress={() => setSelected("login")}>
+                    登录
+                  </Link>
+                </p>
+                <div className="flex justify-end gap-2">
+                  <Button fullWidth color="primary">
+                    注册
+                  </Button>
+                </div>
+              </form>
+            </Tab>
+            <Tab key="guest" title="游客">
+              <div className="flex justify-end gap-2">
+                <Button
+                  fullWidth
+                  color="primary"
+                  className="mt-16"
+                  onClick={() => {
+                    loginAsGuest();
+                    navigate("/", { replace: true });
+                  }}
+                >
+                  以游客身份登录
+                </Button>
+              </div>
+            </Tab>
+          </Tabs>
         </div>
       </div>
     </div>

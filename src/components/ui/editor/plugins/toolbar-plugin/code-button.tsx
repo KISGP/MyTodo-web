@@ -2,12 +2,7 @@ import { cn } from "@nextui-org/react";
 
 import CodeIcon from "@/assets/svg/code.svg?react";
 
-import {
-  toolbarIconClass,
-  toolbarButtonClass,
-  toolbarIconActiveClass,
-  toolbarButtonActiveClass,
-} from "../../theme";
+import { toolbarIconClass, toolbarButtonClass, toolbarIconActiveClass, toolbarButtonActiveClass } from "../../theme";
 
 type ToolbarButtonProps = {
   active?: boolean;
@@ -22,9 +17,7 @@ export default function CodeButton({ active, onClick }: ToolbarButtonProps) {
       aria-label="Code"
       title="Code"
     >
-      <CodeIcon
-        className={cn(toolbarIconClass, active && toolbarIconActiveClass)}
-      />
+      <CodeIcon className={cn(toolbarIconClass, active && toolbarIconActiveClass)} />
     </button>
   );
 }

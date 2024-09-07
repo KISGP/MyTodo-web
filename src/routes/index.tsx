@@ -1,37 +1,35 @@
-// import { lazy } from "react";
+import { lazy } from "react";
+import React, { memo, Suspense } from "react";
+import { Spinner } from "@nextui-org/react";
 import { Navigate, type RouteObject } from "react-router-dom";
 
-// import Loading from "@/components/ui/loading";
-
-// 模拟延迟函数
-// const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// 包装 lazy 函数，添加延迟
-// const lazyWithDelay = (
-//   importFunc: () => Promise<{ default: React.ComponentType<any> }>,
-//   delayMs: number,
-// ) => {
-//   return lazy(() =>
-//     Promise.all([importFunc(), delay(delayMs)]).then(
-//       ([moduleExports]) => moduleExports,
-//     ),
-//   );
-// };
-
 import Home from "@/view/home/index.tsx";
-// const Todo = lazy(() => import("@/view/home/todo.tsx"));
-import Todo from "@/view/home/todo.tsx";
-// const Todo = lazyWithDelay(() => import("@/view/home/todo.tsx"), 100000);
-// const Calendar = lazy(() => import("@/view/home/calendar.tsx"));
-import Calendar from "@/view/home/calendar.tsx";
 
-import Boards from "@/view/home/boards.tsx";
+const Todo = lazy(() => import("@/view/home/page/todo"));
+
+import Calendar from "@/view/home/page/calendar";
+
+import Boards from "@/view/home/page/boards";
 // const User = lazy(() => import("@/view/home/user.tsx"));
-import User from "@/view/home/user.tsx";
+import User from "@/view/home/page/user";
 // const Login = lazy(() => import("@/view/login.tsx"));
 import Login from "@/view/login.tsx";
 // const NotFound = lazy(() => import("@/view/NotFound.tsx"));
 import NotFound from "@/view/NotFound.tsx";
+
+const Loading = memo<{ children: React.ReactNode }>(({ children }) => {
+  return (
+    <Suspense
+      fallback={
+        <div className="absolute left-1/2 top-1/2 size-fit animate-spin">
+          <Spinner />
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
+});
 
 const routes: RouteObject[] = [
   {
@@ -41,33 +39,33 @@ const routes: RouteObject[] = [
       {
         path: "todo",
         element: (
-          // <Loading>
-          <Todo />
-          // </Loading>
+          <Loading>
+            <Todo />
+          </Loading>
         ),
       },
       {
         path: "boards",
         element: (
-          // <Loading>
-          <Boards />
-          // </Loading>
+          <Loading>
+            <Boards />
+          </Loading>
         ),
       },
       {
         path: "calendar",
         element: (
-          // <Loading>
-          <Calendar />
-          // </Loading>
+          <Loading>
+            <Calendar />
+          </Loading>
         ),
       },
       {
         path: "/user/:id",
         element: (
-          // <Loading>
-          <User />
-          // </Loading>
+          <Loading>
+            <User />
+          </Loading>
         ),
       },
       {
@@ -79,9 +77,9 @@ const routes: RouteObject[] = [
   {
     path: "/login",
     element: (
-      // <Loading>
-      <Login />
-      // </Loading>
+      <Loading>
+        <Login />
+      </Loading>
     ),
   },
   {

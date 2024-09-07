@@ -3,10 +3,7 @@ import { createPortal } from "react-dom";
 
 import ModalContainer from "../ui/modal";
 
-type useModalReturn = [
-  JSX.Element | null,
-  (title: string, showModal: (onClose: () => void) => JSX.Element) => void,
-];
+type useModalReturn = [JSX.Element | null, (title: string, showModal: (onClose: () => void) => JSX.Element) => void];
 
 export default function useModal(): useModalReturn {
   const [modalContent, setModalContent] = useState<null | {

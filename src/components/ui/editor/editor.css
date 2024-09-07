@@ -19,7 +19,7 @@
 }
 
 .editor-text-code {
-  color: #9353D3;
+  color: #9353d3;
   background-color: rgba(228, 228, 231, 0.8);
   border-radius: 5px;
   margin: 0 3px;
@@ -36,6 +36,8 @@
 .editor-link {
   color: rgb(33, 111, 219);
   text-decoration: none;
+  text-decoration-line: underline;
+  text-underline-offset: 4px;
 }
 
 .editor-code {
@@ -185,10 +187,12 @@
   margin-left: 20px;
   font-size: 15px;
   color: #a1a1aa;
-  border-left-color: rgb(206, 208, 212);
-  border-left-width: 4px;
+  border-left-color: rgb(122, 122, 122);
+  border-left-width: 3px;
   border-left-style: solid;
   padding-left: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .dark .editor-quote {

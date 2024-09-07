@@ -11,10 +11,7 @@ import type {
 } from "lexical";
 
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
-import {
-  DecoratorBlockNode,
-  SerializedDecoratorBlockNode,
-} from "@lexical/react/LexicalDecoratorBlockNode";
+import { DecoratorBlockNode, SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 
 type BilibiliComponentProps = Readonly<{
   className: Readonly<{
@@ -26,19 +23,10 @@ type BilibiliComponentProps = Readonly<{
   videoID: string;
 }>;
 
-function BilibiliComponent({
-  className,
-  format,
-  nodeKey,
-  videoID,
-}: BilibiliComponentProps) {
+function BilibiliComponent({ className, format, nodeKey, videoID }: BilibiliComponentProps) {
   return (
-    <BlockWithAlignableContents
-      className={className}
-      format={format}
-      nodeKey={nodeKey}
-    >
-      <div className="w-[320px] h-[180px] mx-4 my-8 resize overflow-scroll max-w-[800px] max-h-[450px] min-w-[160px] min-h-[90px]">
+    <BlockWithAlignableContents className={className} format={format} nodeKey={nodeKey}>
+      <div className="mx-4 my-8 h-[180px] max-h-[450px] min-h-[90px] w-[320px] min-w-[160px] max-w-[800px] resize overflow-scroll">
         <iframe
           width="100%"
           height="100%"
@@ -53,14 +41,9 @@ function BilibiliComponent({
   );
 }
 
-export type SerializedBilibiliNode = Spread<
-  { videoID: string },
-  SerializedDecoratorBlockNode
->;
+export type SerializedBilibiliNode = Spread<{ videoID: string }, SerializedDecoratorBlockNode>;
 
-function $convertBilibiliElement(
-  domNode: HTMLElement,
-): null | DOMConversionOutput {
+function $convertBilibiliElement(domNode: HTMLElement): null | DOMConversionOutput {
   const videoID = domNode.getAttribute("data-lexical-Bilibili");
   if (videoID) {
     const node = $createBilibiliNode(videoID);
@@ -105,10 +88,7 @@ export class BilibiliNode extends DecoratorBlockNode {
     element.setAttribute("data-lexical-Bilibili", this.__id);
     element.setAttribute("width", "560");
     element.setAttribute("height", "315");
-    element.setAttribute(
-      "src",
-      `https://www.Bilibili-nocookie.com/embed/${this.__id}`,
-    );
+    element.setAttribute("src", `https://www.Bilibili-nocookie.com/embed/${this.__id}`);
     element.setAttribute("frameborder", "0");
     element.setAttribute(
       "allow",
@@ -141,10 +121,7 @@ export class BilibiliNode extends DecoratorBlockNode {
     return this.__id;
   }
 
-  getTextContent(
-    _includeInert?: boolean | undefined,
-    _includeDirectionless?: false | undefined,
-  ): string {
+  getTextContent(_includeInert?: boolean | undefined, _includeDirectionless?: false | undefined): string {
     return `https://www.Bilibili.com/watch?v=${this.__id}`;
   }
 
@@ -155,12 +132,7 @@ export class BilibiliNode extends DecoratorBlockNode {
       focus: embedBlockTheme.focus || "",
     };
     return (
-      <BilibiliComponent
-        className={className}
-        format={this.__format}
-        nodeKey={this.getKey()}
-        videoID={this.__id}
-      />
+      <BilibiliComponent className={className} format={this.__format} nodeKey={this.getKey()} videoID={this.__id} />
     );
   }
 }
@@ -169,8 +141,6 @@ export function $createBilibiliNode(videoID: string): BilibiliNode {
   return new BilibiliNode(videoID);
 }
 
-export function $isBilibiliNode(
-  node: BilibiliNode | LexicalNode | null | undefined,
-): node is BilibiliNode {
+export function $isBilibiliNode(node: BilibiliNode | LexicalNode | null | undefined): node is BilibiliNode {
   return node instanceof BilibiliNode;
 }

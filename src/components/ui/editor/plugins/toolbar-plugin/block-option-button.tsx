@@ -4,17 +4,8 @@ import { createPortal } from "react-dom";
 import { $createCodeNode } from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
-import {
-  LexicalEditor,
-  $getSelection,
-  $isRangeSelection,
-  $createParagraphNode,
-} from "lexical";
-import {
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-  REMOVE_LIST_COMMAND,
-} from "@lexical/list";
+import { LexicalEditor, $getSelection, $isRangeSelection, $createParagraphNode } from "lexical";
+import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list";
 
 import ChevronDownIcon from "@/assets/svg/chevron-down.svg?react";
 import ParagraphIcon from "@/assets/svg/text-paragraph.svg?react";
@@ -29,19 +20,7 @@ import ListUlIcon from "@/assets/svg/list-ul.svg?react";
 import ListOlIcon from "@/assets/svg/list-ol.svg?react";
 import CodeIcon from "@/assets/svg/code.svg?react";
 
-const supportedBlockTypes = new Set([
-  "paragraph",
-  "quote",
-  "code",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "ul",
-  "ol",
-]);
+const supportedBlockTypes = new Set(["paragraph", "quote", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"]);
 
 const blockTypeToIcon: {
   [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
@@ -76,7 +55,6 @@ const blockTypeToBlockName: { [key: string]: string } = {
 type BlockOptionsDropdownListType = {
   editor: LexicalEditor;
   blockType: string;
-  toolbarRef: React.RefObject<HTMLDivElement>;
   BlockOptionButtonRef: React.RefObject<HTMLButtonElement>;
   setShowBlockOptionsDropDown: (show: boolean) => void;
 };
@@ -84,19 +62,16 @@ type BlockOptionsDropdownListType = {
 function BlockOptionsDropdownList({
   editor,
   blockType,
-  toolbarRef,
   BlockOptionButtonRef,
   setShowBlockOptionsDropDown,
 }: BlockOptionsDropdownListType) {
   const dropDownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // const toolbar = toolbarRef.current;
     const dropDown = dropDownRef.current;
     const blockOptionButton = BlockOptionButtonRef.current;
 
     if (toolbar !== null && dropDown !== null && blockOptionButton !== null) {
-      // const { top, left } = toolbar.getBoundingClientRect();
       const { left, bottom } = blockOptionButton.getBoundingClientRect();
       dropDown.style.top = `${bottom + 10}px`;
       dropDown.style.left = `${left}px`;
@@ -105,13 +80,13 @@ function BlockOptionsDropdownList({
 
   useEffect(() => {
     const dropDown = dropDownRef.current;
-    const toolbar = toolbarRef.current;
+    const BlockOptionButton = BlockOptionButtonRef.current;
 
-    if (dropDown !== null && toolbar !== null) {
+    if (dropDown !== null && toolbar !== null && BlockOptionButton !== null) {
       const handle = (event: any) => {
         const target = event.target;
 
-        if (!dropDown.contains(target) && !toolbar.contains(target)) {
+        if (!dropDown.contains(target) && !BlockOptionButton.contains(target)) {
           setShowBlockOptionsDropDown(false);
         }
       };
@@ -121,7 +96,7 @@ function BlockOptionsDropdownList({
         document.removeEventListener("click", handle);
       };
     }
-  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
+  }, [dropDownRef, setShowBlockOptionsDropDown, BlockOptionButtonRef]);
 
   const formatOptions = [
     {
@@ -320,18 +295,12 @@ function BlockOptionsDropdownList({
 
 type ToolbarButtonProps = {
   blockType: string;
-  toolbarRef: React.RefObject<HTMLDivElement>;
   editor: LexicalEditor;
 };
 
-export default function BlockOptionButton({
-  blockType,
-  toolbarRef,
-  editor,
-}: ToolbarButtonProps) {
+export default function BlockOptionButton({ blockType, editor }: ToolbarButtonProps) {
   const BlockOptionButtonRef = useRef<HTMLButtonElement>(null);
-  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] =
-    useState(false);
+  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] = useState(false);
 
   if (supportedBlockTypes.has(blockType)) {
     const Icon = blockTypeToIcon[blockType];
@@ -342,15 +311,13 @@ export default function BlockOptionButton({
           className={cn(
             "flex cursor-pointer items-center align-middle outline-none",
             "gap-1 rounded-lg border-0 p-2",
-            "hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed text-default-500 dark:text-default-400",
+            "text-default-500 hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed dark:text-default-400",
           )}
           onClick={() => setShowBlockOptionsDropDown(!showBlockOptionsDropDown)}
           aria-label="Formatting Options"
         >
           <Icon className="mx-1 h-5 w-5"></Icon>
-          <span className="inline-block w-fit text-nowrap text-sm">
-            {blockTypeToBlockName[blockType]}
-          </span>
+          <span className="inline-block w-fit text-nowrap text-sm">{blockTypeToBlockName[blockType]}</span>
           <ChevronDownIcon className="mx-2 h-4 w-4" />
         </button>
         {showBlockOptionsDropDown &&
@@ -358,7 +325,6 @@ export default function BlockOptionButton({
             <BlockOptionsDropdownList
               editor={editor}
               blockType={blockType}
-              toolbarRef={toolbarRef}
               BlockOptionButtonRef={BlockOptionButtonRef}
               setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
             />,

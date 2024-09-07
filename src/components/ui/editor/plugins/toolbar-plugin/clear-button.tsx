@@ -1,10 +1,4 @@
-import {
-  Modal,
-  ModalContent,
-  ModalBody,
-  ModalFooter,
-  Button,
-} from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 
 import Trash from "@/assets/svg/trash.svg?react";
 
@@ -17,19 +11,9 @@ type ToolbarButtonProps = {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export default function RedoButton({
-  isOpen,
-  onOpenChange,
-  clear,
-  onClick,
-}: ToolbarButtonProps) {
+export default function RedoButton({ isOpen, onOpenChange, clear, onClick }: ToolbarButtonProps) {
   return (
-    <button
-      onClick={onClick}
-      className={toolbarButtonClass}
-      aria-label="Clear"
-      title="Clear"
-    >
+    <button onClick={onClick} className={toolbarButtonClass} aria-label="Clear" title="Clear">
       <Trash className={toolbarIconClass} />
       <Modal size="xs" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

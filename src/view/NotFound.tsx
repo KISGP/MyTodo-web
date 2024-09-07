@@ -1,9 +1,7 @@
-import { memo } from 'react'
+import { memo } from "react";
 
 const NotFound = memo(() => {
-  return (
-    <div>404</div>
-  )
-})
+  return <div>404</div>;
+});
 
-export default NotFound
+export default NotFound;

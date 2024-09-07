@@ -8,12 +8,7 @@ type ToolbarButtonProps = {
 
 export default function LeftAlignIconButton({ onClick }: ToolbarButtonProps) {
   return (
-    <button
-      title="Left Align"
-      aria-label="Left Align"
-      onClick={onClick}
-      className={toolbarButtonClass}
-    >
+    <button title="Left Align" aria-label="Left Align" onClick={onClick} className={toolbarButtonClass}>
       <LeftAlignIcon className={toolbarIconClass} />
     </button>
   );

@@ -1,15 +1,14 @@
 import { memo } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  User,
-} from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User } from "@nextui-org/react";
+
+import { useStore } from "@/store";
 
 const Avatar = memo(() => {
   const navigate = useNavigate();
+
+  const [quit] = useStore((state) => [state.quit]);
+
   return (
     <Dropdown placement="bottom-start">
       <DropdownTrigger>
@@ -18,10 +17,9 @@ const Avatar = memo(() => {
           avatarProps={{
             size: "sm",
             isBordered: true,
-            src: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
+            src: "https://avatars.githubusercontent.com/u/1725942?v=4",
           }}
           className="transition-transform"
-          description="@tonyreichert"
           name="Tony Reichert"
         />
       </DropdownTrigger>
@@ -32,6 +30,7 @@ const Avatar = memo(() => {
           key="logout"
           color="danger"
           onClick={() => {
+            quit();
             navigate("/login", { replace: true });
           }}
         >

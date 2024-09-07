@@ -6,10 +6,7 @@ const calendar = memo(() => {
   return (
     <div>
       <I18nProvider locale="zh-CN-u-ca-chinese">
-        <Calendar
-          aria-label="Date (International Calendar)"
-          showMonthAndYearPickers
-        />
+        <Calendar aria-label="Date (International Calendar)" showMonthAndYearPickers />
       </I18nProvider>
     </div>
   );

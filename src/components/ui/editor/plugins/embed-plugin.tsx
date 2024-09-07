@@ -75,11 +75,9 @@ export function AutoEmbedDialog({
       debounce((inputText: string) => {
         const urlMatch = URL_MATCHER.exec(inputText);
         if (embedConfig != null && inputText != null && urlMatch != null) {
-          Promise.resolve(embedConfig.parseUrl(inputText)).then(
-            (parseResult) => {
-              setEmbedResult(parseResult);
-            },
-          );
+          Promise.resolve(embedConfig.parseUrl(inputText)).then((parseResult) => {
+            setEmbedResult(parseResult);
+          });
         } else if (embedResult != null) {
           setEmbedResult(null);
         }
@@ -101,11 +99,14 @@ export function AutoEmbedDialog({
         type="text"
         color="primary"
         variant="bordered"
-        className="w-[420px]"
         placeholder={`example: ${embedConfig.exampleUrl}`}
         onValueChange={(newValue) => {
           setText(newValue);
           validateText(newValue);
+        }}
+        classNames={{
+          base: "w-[420px]",
+          input: "placeholder:text-default-300",
         }}
       />
       <div className="flex flex-row-reverse">
@@ -126,11 +127,7 @@ export default function AutoEmbedPlugin(): JSX.Element {
     ));
   };
 
-  const getMenuOptions = (
-    activeEmbedConfig: PlaygroundEmbedConfig,
-    embedFn: () => void,
-    dismissFn: () => void,
-  ) => {
+  const getMenuOptions = (activeEmbedConfig: PlaygroundEmbedConfig, embedFn: () => void, dismissFn: () => void) => {
     return [
       new AutoEmbedOption("Dismiss", {
         onSelect: dismissFn,

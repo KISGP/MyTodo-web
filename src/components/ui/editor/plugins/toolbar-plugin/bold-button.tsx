@@ -2,12 +2,7 @@ import { cn } from "@nextui-org/react";
 
 import BoldIcon from "@/assets/svg/type-bold.svg?react";
 
-import {
-  toolbarIconClass,
-  toolbarButtonClass,
-  toolbarIconActiveClass,
-  toolbarButtonActiveClass,
-} from "../../theme";
+import { toolbarIconClass, toolbarButtonClass, toolbarIconActiveClass, toolbarButtonActiveClass } from "../../theme";
 
 type ToolbarButtonProps = {
   active?: boolean;
@@ -22,9 +17,7 @@ export default function BoldButton({ active, onClick }: ToolbarButtonProps) {
       onClick={onClick}
       className={cn(toolbarButtonClass, active && toolbarButtonActiveClass)}
     >
-      <BoldIcon
-        className={cn(toolbarIconClass, active && toolbarIconActiveClass)}
-      />
+      <BoldIcon className={cn(toolbarIconClass, active && toolbarIconActiveClass)} />
     </button>
   );
 }

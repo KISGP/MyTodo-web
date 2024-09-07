@@ -5,7 +5,7 @@ import { Divider } from "@nextui-org/react";
 import Avatar from "@/components/ui/avatar";
 import Search from "@/components/ui/search";
 import ThemeButton from "@/components/ui/theme-button";
-import Menu, { type MenuItemProps } from "@/components/ui/menu";
+import Sidebar, { type MenuItemProps } from "@/components/ui/sidebar";
 import TodoIcon from "@/assets/svg/todo.svg?react";
 import CalendarIcon from "@/assets/svg/calendar.svg?react";
 import BoardsIcon from "@/assets/svg/boards.svg?react";
@@ -30,11 +30,9 @@ const index = memo(() => {
       </header>
 
       <main className="flex size-full flex-row">
-        <div id="sidebar" className="h-full w-[200px] min-w-[200px] px-3">
-          <Menu menus={Menus} />
-        </div>
+        <Sidebar menus={Menus} />
 
-        <div className="mr-2 flex-grow rounded-tl-2xl rounded-tr-2xl bg-content1 pl-2">
+        <div className="mr-2 flex-grow overflow-hidden rounded-tl-2xl rounded-tr-2xl bg-content1">
           <Outlet />
         </div>
       </main>

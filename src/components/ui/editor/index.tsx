@@ -1,6 +1,5 @@
-import { cn } from "@nextui-org/react";
-
-// 插件
+import { LexicalComposer, InitialConfigType } from "@lexical/react/LexicalComposer";
+import { cn, Divider } from "@nextui-org/react";
 import { CodeNode } from "@lexical/code";
 import { TRANSFORMERS } from "@lexical/markdown";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
@@ -8,7 +7,6 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -18,39 +16,22 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { AutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 
-// 自定义插件
 import ToolbarPlugin from "./plugins/toolbar-plugin/index.tsx";
 import BilibiliPlugin from "./plugins/bilibili-plugin.tsx";
 import AutoEmbedPlugin from "./plugins/embed-plugin.tsx";
+import ActionPlugin from "./plugins/action-plugin.tsx";
+import SavePlugin from "./plugins/save-plugin.tsx";
 
-// 自定义结点
 import { BilibiliNode } from "./nodes/bilibili-node.tsx";
 
-// 样式
+import { useStore } from "@/store/index.ts";
+
 import theme from "./theme.ts";
 import "./editor.css";
 
-const editorConfig = {
-  namespace: "Editor",
-  theme,
-  onError(error: Error) {
-    throw error;
-  },
-  nodes: [
-    HeadingNode,
-    QuoteNode,
-    CodeNode,
-    ListNode,
-    ListItemNode,
-    LinkNode,
-    AutoLinkNode,
-    BilibiliNode,
-  ],
-};
-
 function Placeholder() {
   return (
-    <div className="pointer-events-none absolute left-5 top-6 select-none text-base text-default-500/60">
+    <div className="pointer-events-none absolute left-3 top-2 select-none text-base text-default-500/60">
       {[
         "输入待办详情~",
         "——————————————————————————————————————",
@@ -93,19 +74,32 @@ const MATCHERS = [
   },
 ];
 
-export default function Editor() {
+export default function LexicalEditor() {
+  const editorId = useStore((state) => state.editorId);
+
+  const initialConfig: InitialConfigType = {
+    namespace: "LexicalEditor",
+    theme,
+    onError(error: Error) {
+      throw error;
+    },
+    nodes: [HeadingNode, QuoteNode, CodeNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, BilibiliNode],
+  };
+
   return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <div className="relative w-full text-left text-base font-normal dark:text-default-500/80">
+    <LexicalComposer initialConfig={initialConfig} key={editorId}>
+      <div className="relative w-full rounded-xl bg-content2 text-left text-base font-normal dark:text-default-500/80">
         <ToolbarPlugin />
-        <div className="relative p-2">
+        <Divider />
+        <ActionPlugin />
+        <div className="relative py-2 pl-3">
           <RichTextPlugin
             contentEditable={
               <ContentEditable
                 className={cn(
-                  "relative resize-none overflow-scroll rounded-xl outline-none",
-                  "h-[calc(100vh_-_186px)] max-h-[calc(100vh_-_186px)] max-w-full px-3 py-4",
-                  "bg-default-50 caret-default-800 dark:bg-default-100/50",
+                  "relative resize-none overflow-scroll outline-none",
+                  "h-[calc(100vh_-_213px)] max-h-[calc(100vh_-_213px)] max-w-full",
+                  "caret-default-800",
                 )}
                 aria-placeholder="输入待办详情"
                 placeholder={<Placeholder />}
@@ -115,6 +109,7 @@ export default function Editor() {
           />
           <ListPlugin />
           <LinkPlugin />
+          <SavePlugin />
           <HistoryPlugin />
           <BilibiliPlugin />
           <AutoFocusPlugin />

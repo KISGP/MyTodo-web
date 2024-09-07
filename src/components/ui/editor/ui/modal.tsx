@@ -29,10 +29,7 @@ export default function ModalContainer({
     };
     const clickOutsideHandler = (event: MouseEvent) => {
       const target = event.target;
-      if (
-        modalRef.current !== null &&
-        !modalRef.current.contains(target as Node)
-      ) {
+      if (modalRef.current !== null && !modalRef.current.contains(target as Node)) {
         onClose();
       }
     };

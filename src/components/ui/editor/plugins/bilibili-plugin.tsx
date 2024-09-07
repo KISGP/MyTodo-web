@@ -1,17 +1,11 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
-import {
-  COMMAND_PRIORITY_EDITOR,
-  createCommand,
-  LexicalCommand,
-} from "lexical";
+import { COMMAND_PRIORITY_EDITOR, createCommand, LexicalCommand } from "lexical";
 import { useEffect } from "react";
 
 import { $createBilibiliNode, BilibiliNode } from "../nodes/bilibili-node.tsx";
 
-export const INSERT_BILIBILI_COMMAND: LexicalCommand<string> = createCommand(
-  "INSERT_BILIBILI_COMMAND",
-);
+export const INSERT_BILIBILI_COMMAND: LexicalCommand<string> = createCommand("INSERT_BILIBILI_COMMAND");
 
 // FIXME: 无法添加多个视频结点
 export default function BilibiliPlugin(): JSX.Element | null {

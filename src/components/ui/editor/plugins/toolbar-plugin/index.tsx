@@ -18,7 +18,6 @@ import {
   CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
 } from "lexical";
-import { exportFile, importFile } from "@lexical/file";
 
 import Divider from "../../ui/divider.tsx";
 
@@ -26,6 +25,7 @@ import UndoButton from "./undo-button.tsx";
 import RedoButton from "./redo-button.tsx";
 import BoldButton from "./bold-button.tsx";
 import CodeButton from "./code-button.tsx";
+import SaveButton from "./save-button.tsx";
 import BlockOptionButton from "./block-option-button.tsx";
 import LinkButton, { getSelectedNode } from "./link-button.tsx";
 import ItalicButton from "./italic-button.tsx";
@@ -34,10 +34,11 @@ import LeftAlignIconButton from "./left-button.tsx";
 import CenterAlignIconButton from "./center-button.tsx";
 import RightAlignIconButton from "./right-button.tsx";
 import StrikethroughButton from "./strikethrough-button.tsx";
-import ImportButton from "./import-button.tsx";
-import ExportButton from "./export-button.tsx";
 import ClearButton from "./clear-button.tsx";
 import InsertOptionButton from "./insert-option-button.tsx";
+
+import { useStore } from "@/store";
+import useToast from "@/hooks/useToast";
 
 const LowPriority = 1;
 
@@ -56,14 +57,15 @@ export default function ToolbarPlugin() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
+  const saveTodo = useStore((state) => state.saveTodo);
+
+  const myToast = useToast();
+
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const anchorNode = selection.anchor.getNode();
-      const element =
-        anchorNode.getKey() === "root"
-          ? anchorNode
-          : anchorNode.getTopLevelElementOrThrow();
+      const element = anchorNode.getKey() === "root" ? anchorNode : anchorNode.getTopLevelElementOrThrow();
       const elementKey = element.getKey();
       const elementDOM = editor.getElementByKey(elementKey);
       if (elementDOM !== null) {
@@ -72,9 +74,7 @@ export default function ToolbarPlugin() {
           const type = parentList ? parentList.getTag() : element.getTag();
           setBlockType(type);
         } else {
-          const type = $isHeadingNode(element)
-            ? element.getTag()
-            : element.getType();
+          const type = $isHeadingNode(element) ? element.getTag() : element.getType();
           setBlockType(type);
         }
       }
@@ -143,10 +143,7 @@ export default function ToolbarPlugin() {
   }, [editor, $updateToolbar]);
 
   return (
-    <div
-      className="flex items-center justify-between px-3 py-1 align-middle dark:bg-default-100/50"
-      ref={toolbarRef}
-    >
+    <div className="flex items-center justify-between p-2 px-2 align-middle" ref={toolbarRef}>
       <div className="flex items-center">
         <UndoButton
           disabled={canUndo}
@@ -161,11 +158,7 @@ export default function ToolbarPlugin() {
           }}
         />
         <Divider />
-        <BlockOptionButton
-          editor={editor}
-          blockType={blockType}
-          toolbarRef={toolbarRef}
-        />
+        <BlockOptionButton editor={editor} blockType={blockType} />
         <BoldButton
           active={isBold}
           onClick={() => {
@@ -236,13 +229,9 @@ export default function ToolbarPlugin() {
             editor.focus();
           }}
         />
-        <ImportButton onClick={() => importFile(editor)} />
-        <ExportButton
+        <SaveButton
           onClick={() => {
-            exportFile(editor, {
-              fileName: `Todo-${new Date().toISOString()}`,
-              source: "Playground",
-            });
+            myToast.promise(saveTodo());
           }}
         />
       </div>
