@@ -1,5 +1,7 @@
-import React, { createContext, memo, useContext, useState } from "react";
-import { useNavigate, NavigateFunction } from "react-router-dom";
+import React, { memo, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { StyleContext } from "@/context/StyleContext";
 
 import CollapsedIcon from "@/assets/svg/collapsed.svg?react";
 import { cn, Tooltip } from "@nextui-org/react";
@@ -14,7 +16,9 @@ export type MenuItemProps = {
 };
 
 const MenuItem = memo<MenuItemProps>(({ path, title, Icon }) => {
-  const { isCollapsed, navigate } = useContext(SidebarContext);
+  const navigate = useNavigate();
+
+  const { isCollapsed } = useContext(StyleContext)!;
 
   return (
     <Tooltip content={title} placement="right">
@@ -31,44 +35,35 @@ const MenuItem = memo<MenuItemProps>(({ path, title, Icon }) => {
   );
 });
 
-const SidebarContext = createContext<{ isCollapsed: boolean; navigate?: NavigateFunction }>({
-  isCollapsed: false,
-  navigate: undefined,
-});
-
 const Sidebar: React.FC<{ menus: MenuItemProps[] }> = memo(({ menus }) => {
-  const navigate = useNavigate();
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, setIsCollapsed } = useContext(StyleContext)!;
 
   return (
-    <SidebarContext.Provider value={{ isCollapsed, navigate }}>
-      <div
-        id="sidebar"
-        className={cn(
-          "flex h-full flex-col justify-between px-3 pb-3 transition-width pt-[60px]",
-          isCollapsed ? "w-[76px]" : "w-[200px]",
-        )}
-      >
-        <div>
-          {menus.map((menu) => (
-            <MenuItem key={menu.path} {...menu} />
-          ))}
-        </div>
-
-        <Tooltip content="折叠" placement="right">
-          <div
-            onClick={() => {
-              setIsCollapsed(!isCollapsed);
-              document.getElementById("sidebar")?.offsetWidth;
-            }}
-            className="my-1 w-full cursor-pointer select-none rounded-lg py-2 transition-colors hover:bg-default-300/50 dark:hover:bg-default-200/40"
-          >
-            <CollapsedIcon className={cn("size-7 fill-default-500", isCollapsed ? "mx-3" : "ml-3")} />
-          </div>
-        </Tooltip>
+    <div
+      id="sidebar"
+      className={cn(
+        "flex h-full flex-col justify-between px-3 pb-3 pt-[60px] transition-width",
+        isCollapsed ? "w-[76px]" : "w-[200px]",
+      )}
+    >
+      <div>
+        {menus.map((menu) => (
+          <MenuItem key={menu.path} {...menu} />
+        ))}
       </div>
-    </SidebarContext.Provider>
+
+      <Tooltip content="折叠" placement="right">
+        <div
+          onClick={() => {
+            setIsCollapsed(!isCollapsed);
+            document.getElementById("sidebar")?.offsetWidth;
+          }}
+          className="my-1 w-full cursor-pointer select-none rounded-lg py-2 transition-colors hover:bg-default-300/50 dark:hover:bg-default-200/40"
+        >
+          <CollapsedIcon className={cn("size-7 fill-default-500", isCollapsed ? "mx-3" : "ml-3")} />
+        </div>
+      </Tooltip>
+    </div>
   );
 });
 

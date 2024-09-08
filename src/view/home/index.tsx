@@ -1,6 +1,8 @@
-import { memo } from "react";
+import { memo, useContext } from "react";
 import { Outlet } from "react-router-dom";
-import { Divider } from "@nextui-org/react";
+import { Divider, cn } from "@nextui-org/react";
+
+import { StyleProvider, StyleContext } from "@/context/StyleContext";
 
 import Avatar from "@/components/ui/avatar";
 import Search from "@/components/ui/search";
@@ -16,25 +18,40 @@ const Menus: MenuItemProps[] = [
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
 ];
 
-const Index = memo(() => {
-  return (
-    <div className="relative flex h-screen w-screen bg-base-background">
-      <Sidebar menus={Menus} />
-      <div className="flex h-full w-full flex-col">
-        <header className="flex h-[60px] min-h-[60px] items-center justify-between">
-          <Search />
-          <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
-            <Avatar />
-            <Divider orientation="vertical" className="mx-4 h-[65%]" />
-            <ThemeButton />
-          </div>
-        </header>
+const Main = memo(() => {
+  const { isCollapsed } = useContext(StyleContext)!;
 
-        <div className="mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1">
-          <Outlet />
+  return (
+    <div
+      className={cn(
+        "flex h-full flex-col transition-width",
+        isCollapsed ? "w-[calc(100vw_-_76px)]" : "w-[calc(100vw_-_200px)]",
+      )}
+    >
+      <header className="flex h-[60px] min-h-[60px] items-center justify-between">
+        <Search />
+        <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
+          <Avatar />
+          <Divider orientation="vertical" className="mx-4 h-[65%]" />
+          <ThemeButton />
         </div>
+      </header>
+
+      <div className={cn("mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1")}>
+        <Outlet />
       </div>
     </div>
+  );
+});
+
+const Index = memo(() => {
+  return (
+    <StyleProvider>
+      <div className="relative flex h-screen w-screen bg-base-background">
+        <Sidebar menus={Menus} />
+        <Main />
+      </div>
+    </StyleProvider>
   );
 });
 

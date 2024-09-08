@@ -101,7 +101,7 @@ export default function LexicalEditor() {
             contentEditable={
               <ContentEditable
                 className={cn(
-                  "relative resize-none overflow-scroll outline-none",
+                  "relative resize-none overflow-y-scroll outline-none scrollbar",
                   "h-[calc(100vh_-_213px)] max-h-[calc(100vh_-_213px)] max-w-full",
                   "caret-default-800",
                 )}

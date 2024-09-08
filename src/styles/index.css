@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-default-100/50 rounded-2xl;
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 8px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-default-400/50 rounded-2xl;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-default-400;
+  }
+}
