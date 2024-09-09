@@ -144,7 +144,7 @@ export default function Board() {
                 }}
               </Droppable>
 
-              <div className="flex h-9 flex-shrink-0 cursor-pointer items-center gap-3 rounded-lg px-2 hover:bg-content4/30">
+              <div className="mx-2 flex h-9 flex-shrink-0 cursor-pointer items-center gap-3 rounded-lg hover:bg-content4/30">
                 <AddIcon className="ml-1 size-6 fill-default-400" />
                 <span className="select-none text-default-400">Add Item</span>
               </div>
