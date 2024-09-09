@@ -1,7 +1,7 @@
 import { lazy } from "react";
-import React, { memo, Suspense } from "react";
+import React, { Suspense } from "react";
 import { Spinner } from "@nextui-org/react";
-import { Navigate, type RouteObject } from "react-router-dom";
+import { Navigate, useLocation, type RouteObject } from "react-router-dom";
 
 import Home from "@/view/home/index.tsx";
 
@@ -16,8 +16,9 @@ import User from "@/view/home/page/user";
 import Login from "@/view/login.tsx";
 // const NotFound = lazy(() => import("@/view/NotFound.tsx"));
 import NotFound from "@/view/NotFound.tsx";
+import { useStore } from "@/store";
 
-const Loading = memo<{ children: React.ReactNode }>(({ children }) => {
+function Loading({ children }: { children: React.ReactNode }) {
   return (
     <Suspense
       fallback={
@@ -29,7 +30,7 @@ const Loading = memo<{ children: React.ReactNode }>(({ children }) => {
       {children}
     </Suspense>
   );
-});
+}
 
 const routes: RouteObject[] = [
   {
@@ -87,5 +88,20 @@ const routes: RouteObject[] = [
     element: <NotFound />,
   },
 ];
+
+export function RouterGuard({ children }: { children: React.ReactNode }) {
+  const pathname = useLocation().pathname;
+  const isLogin = useStore((state) => state.isLogin);
+
+  if (!["/login", "*"].includes(pathname) && !isLogin) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (["/login"].includes(pathname) && isLogin) {
+    return <Navigate to="/todo" replace />;
+  }
+
+  return children;
+}
 
 export default routes;
