@@ -1,7 +1,7 @@
 import IndexedDBHelper from "@/lib/indexedDB";
 import { generateLocalID } from "@/lib/utils";
-import { parseDate } from "@internationalized/date";
 import { DataStateType } from "./type";
+import { tags } from "./constant";
 
 const DB = new IndexedDBHelper();
 
@@ -11,228 +11,261 @@ export const defaultTodo = {
   time: new Date().toISOString().slice(0, 10),
   content:
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}',
+  tags: [],
 };
 
 export const createDataSlice: DataStateType = (set, get) => ({
-  todo: defaultTodo,
+  todos: [],
 
-  todoList: [],
+  tags: [
+    {
+      ...tags.All,
+      isHidden: false,
+    },
+    {
+      ...tags.Backlog,
+      isHidden: false,
+    },
+    {
+      ...tags.Ready,
+      isHidden: false,
+    },
+    {
+      ...tags.InProgress,
+      isHidden: false,
+    },
+    {
+      ...tags.InReview,
+      isHidden: false,
+    },
+    {
+      ...tags.Done,
+      isHidden: false,
+    },
+    {
+      ...tags.GiveUp,
+      isHidden: false,
+    },
+  ],
 
-  saveTodo: async () => {
-    const todo = get().todo;
+  save_todo: async (value) => {
+    // 为新的 todo 添加一些必要的属性
+    const { id, uid, content, ...other } = {
+      ...value,
+      id: generateLocalID(),
+      isCloudSynced: false,
+      isSelected: true,
+      uid: get().user.uid,
+    };
 
-    // 标题是必需的
-    if (todo.title === "") {
-      return Promise.reject("标题不能为空");
+    // 保存到 indexedDB
+    const status = await DB.add({ id, uid, content });
+    if (!status) return null;
+
+    // 添加到 todos
+    set((state) => {
+      state.todos.unshift({ id, uid, ...other });
+    });
+
+    return id;
+  },
+
+  delete_todo: async (ids) => {
+    const successIds: string[] = [];
+
+    // 从 indexedDB 中删除, 并记录删除失败的 id
+    for (const id of ids) {
+      if (await DB.delete(id)) successIds.push(id);
     }
 
-    // 通过 todo.id 判断是否是新的 todo，并进行更新或新建
-    // 更新
-    if (todo.id) {
-      set((state) => {
-        const index = state.todoList.findIndex((item) => item.id === todo.id);
-        state.todoList[index].time = todo.time;
-        state.todoList[index].title = todo.title;
-      });
+    // 从 todos 中删除
+    set((state) => {
+      state.todos = state.todos.filter((item) => !successIds.includes(item.id));
+    });
 
-      // 更新 indexedDB
+    // 如果删除成功的 id 数量不等于 ids 的长度则说明删除失败（部分失败）
+    return ids.length === successIds.length;
+  },
 
-      try {
-        return await DB.update(todo);
-      } catch (error) {
-        return Promise.reject(String(error));
+  update_todo: async (id, value) => {
+    const { content, ...other } = value;
+
+    // 更新 indexedDB
+    if (content) {
+      const status = await DB.update(id, content);
+      if (!status) return false;
+    }
+
+    // 更新 todos
+    set((state) => {
+      const index = state.todos.findIndex((item) => item.id === id);
+      state.todos[index] = { ...state.todos[index], ...other };
+    });
+
+    return true;
+  },
+
+  update_todos: (fn) => {
+    set((state) => {
+      state.todos = fn(state.todos);
+    });
+  },
+
+  reorder_todos: (index) => {
+    const list = [...get().todos];
+
+    let sourceIndex, destinationIndex;
+
+    if (typeof index[0] === "string") {
+      let [sourceId, destinationId] = index as [string, string];
+
+      for (let i = 0; i < list.length; i++) {
+        switch (list[i].id) {
+          case sourceId:
+            sourceIndex = i;
+            break;
+          case destinationId:
+            destinationIndex = i;
+            break;
+        }
       }
     } else {
-      // 新建
-
-      // 添加一些新的状态
-      const newTodo = {
-        ...todo,
-        id: generateLocalID(),
-        isCloudSynced: false,
-        isSelected: true,
-        isDone: false,
-        uid: get().user.uid,
-      };
-
-      try {
-        const msg = await DB.add(newTodo);
-
-        // 取消当前所有选中
-        get().toggleAllTodoItemSelection(false);
-
-        // 添加到 todoList 和 更新 todo
-        set((state) => {
-          state.todo = newTodo;
-          state.todoList.unshift({
-            ...newTodo,
-            isSelected: true,
-            isDone: false,
-          });
-        });
-
-        return msg;
-      } catch (error) {
-        return Promise.reject(String(error));
-      }
+      sourceIndex = index[0] as number;
+      destinationIndex = index[1] as number;
     }
-  },
+    if (sourceIndex == undefined || destinationIndex == undefined) return;
 
-  saveTodo_title: (title) => {
-    set((state) => {
-      state.todo.title = title.replace(/\s*/g, "");
-    });
-  },
-
-  saveTodo_time: (ISOtime) => {
-    set((state) => {
-      state.todo.time = ISOtime;
-    });
-  },
-
-  getTodo_time: () => {
-    const time = get().todo?.time;
-    if (time) {
-      return parseDate(time);
-    } else {
-      return undefined;
-    }
-  },
-
-  editorId: generateLocalID(),
-
-  isAllowContentChanged: false,
-
-  toggleIsAllowContentChanged: (status) => {
-    set((state) => {
-      state.isAllowContentChanged = status;
-    });
-  },
-
-  saveTodo_content: (serializedEditorState) => {
-    set((state) => {
-      state.todo.content = serializedEditorState;
-    });
-  },
-
-  clearTodo_content: () => {
-    // 通过修改 LexicalComposer 的 key 使之重新渲染，以此来清空编辑器内容
-    set((state) => {
-      state.editorId = generateLocalID();
-    });
-  },
-
-  createTodo: async () => {
-    const { todo, saveTodo, clearTodo_content, toggleAllTodoItemSelection } = get();
-
-    // 如果当前 todo 有 title 但没有 id 则认为是未保存的 todo
-    if (!todo.id && todo.title) {
-      return Promise.reject("请先保存当前待办");
-    }
-
-    if (todo.id) {
-      if (todo.title) {
-        // 保存当前 todo, 防止丢失
-        await saveTodo();
-      } else {
-        return Promise.reject("标题不能为空");
-      }
-    }
-
-    // 清空编辑器内容
-    clearTodo_content();
-
-    // 取消当前所有选中
-    toggleAllTodoItemSelection(false);
-
-    // 初始化 todo 数据
-    set({ todo: defaultTodo });
-
-    return "新建成功";
-  },
-
-  deleteTodo: async () => {
-    const todoList = get().todoList;
-
-    try {
-      const newTodoList = await Promise.all(
-        todoList.map((item) => {
-          return (async () => {
-            if (!item.isSelected) return item;
-
-            await DB.delete(item.id);
-
-            return null;
-          })();
-        }),
-      );
-
-      set({ todoList: newTodoList.filter((item) => item !== null) });
-
-      return "删除成功";
-    } catch (error) {
-      return Promise.reject(String(error));
-    }
-  },
-
-  toggleTodoItemDone: async () => {
-    const todoList = get().todoList;
-
-    const newTodoList = await Promise.all(
-      todoList.map((item) => {
-        return (async () => {
-          if (!item.isSelected) return item;
-
-          // 更新 indexedDB
-          await DB.update({ id: item.id, isDone: !item.isDone });
-
-          return { ...item, isDone: !item.isDone };
-        })();
-      }),
-    );
-
-    set({ todoList: newTodoList });
-  },
-
-  reorderTodoList: (sourceIndex, destinationIndex) => {
-    if (sourceIndex === destinationIndex) return;
-
-    // 创建副本
-    const list = [...get().todoList];
-
-    // 对副本进行修改
     const [removed] = list.splice(sourceIndex, 1);
     list.splice(destinationIndex, 0, removed);
 
-    // 更新状态
-    set({ todoList: list });
+    set({ todos: list });
   },
 
-  toggleTodoItemSelection: (index, status) => {
-    // const list = [...get().todoList];
+  get_todo: async (id) => {
+    const res = await DB.get(id);
+    if (!res) return null;
+
+    const todo = get().todos.find((item) => item.id === id);
+    if (!todo) return null;
+
+    return { content: res.content, ...todo };
+  },
+
+  // ================== 仅用于 /todo 页面 ==================
+
+  tempTodo: defaultTodo,
+
+  update_tempTodo: (value) => {
     set((state) => {
-      state.todoList[index].isSelected = status;
+      state.tempTodo = { ...state.tempTodo, ...value };
     });
   },
 
-  toggleAllTodoItemSelection: (status) => {
-    set((state) => {
-      state.todoList.forEach((item) => {
-        item.isSelected = status;
-      });
+  change_tempTodo: async (id) => {
+    const todo = await get().get_todo(id);
+    if (!todo) return;
+
+    // 更改显示内容
+    set({
+      tempTodo: {
+        id: id,
+        title: todo.title,
+        time: todo.time,
+        content: todo.content,
+        tags: todo.tags,
+      },
     });
+
+    // 修改编辑器内容
+    if (window.editor) {
+      window.editor.setEditorState(window.editor.parseEditorState(todo.content));
+    }
+
+    // 修改当前选中
+    get().update_todos((todos) => todos.map((item) => ({ ...item, isSelected: item.id === id })));
   },
 
-  changeCurrentTodo: async (index) => {
-    // 判断当前是否有多个选中的
-    if (get().todoList.filter((item) => item.isSelected).length > 1) return;
+  save_tempTodo: async () => {
+    const { tempTodo, update_todo, toggle_AllTodoSelected, update_tempTodo, save_todo } = get();
 
-    const data = await DB.get(get().todoList[index].id);
+    if (tempTodo.title === "") return { status: false, msg: "标题不能为空" };
 
-    if (!data) return;
-    set((state) => {
-      state.isAllowContentChanged = true;
-      state.todo = { ...data, content: data.content };
-    });
+    if (tempTodo.id) {
+      const status = await update_todo(tempTodo.id, tempTodo);
+
+      return { status, msg: status ? "更新成功" : "更新失败" };
+    } else {
+      toggle_AllTodoSelected(false);
+
+      const id = await save_todo(tempTodo);
+
+      if (id) {
+        update_tempTodo({ id });
+
+        return { status: true, msg: "保存成功" };
+      } else {
+        return { status: false, msg: "保存失败" };
+      }
+    }
+  },
+
+  create_tempTodo: async () => {
+    const { tempTodo, save_tempTodo, reset_tempTodo, toggle_AllTodoSelected } = get();
+
+    if (tempTodo.id) {
+      // 如果当前有未保存的 todo 则先保存
+      const { status, msg } = await save_tempTodo();
+
+      if (!status) return { status, msg };
+    }
+
+    toggle_AllTodoSelected(false);
+
+    reset_tempTodo();
+
+    return { status: true, msg: "新建成功" };
+  },
+
+  toggle_AllTodoSelected: (status) => {
+    get().update_todos((todos) =>
+      todos.map((item) => {
+        return { ...item, isSelected: status };
+      }),
+    );
+  },
+
+  delete_selectedTodo: async () => {
+    const { todos, delete_todo } = get();
+    const selectedIds = todos.filter((item) => item.isSelected).map((item) => item.id);
+
+    if (selectedIds.length === 0) return { status: false, msg: "未选中任何待办" };
+
+    const status = await delete_todo(selectedIds);
+
+    return { status, msg: status ? "删除成功" : "删除失败" };
+  },
+
+  reset_tempTodo: () => {
+    get().update_tempTodo(defaultTodo);
+
+    // 初始化编辑器内容
+    if (window.editor) {
+      window.editor.setEditorState(window.editor.parseEditorState(defaultTodo.content));
+    }
+  },
+
+  // ================== 仅用于 /board 页面 ==================
+
+  reorder_tags: (sourceIndex, destinationIndex) => {
+    const list = [...get().tags];
+
+    const [removed] = list.splice(sourceIndex, 1);
+    list.splice(destinationIndex, 0, removed);
+
+    set({ tags: list });
+  },
+
+  save_item: (value) => {
+    get().save_todo({ ...defaultTodo, ...value });
   },
 });

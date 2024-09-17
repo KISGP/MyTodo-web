@@ -1,17 +1,14 @@
 import { memo, useEffect, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle, getPanelGroupElement } from "react-resizable-panels";
 
-import useToast from "@/hooks/useToast";
 import DragIcon from "@/assets/svg/drag.svg?react";
 import TodoList from "@/components/ui/todo-list.tsx";
 import TodoEditor from "@/components/ui/todo-editor";
-import { debounce } from "@/lib/utils";
+import { throttle } from "@/lib/utils";
 
 const todo = memo(() => {
   const [listMinWidth, setListMinWidth] = useState<number>(40);
   const [editorMinWidth, setEditorMinWidth] = useState<number>(60);
-
-  const myToast = useToast();
 
   // 更新编辑器最大宽度
   useEffect(() => {
@@ -20,11 +17,9 @@ const todo = memo(() => {
     const handleResize = (entries: ResizeObserverEntry[]) => {
       for (let entry of entries) {
         if (entry.target === groupElement) {
-          if (groupElement!.offsetWidth < 1200) {
-            myToast.warning("窗口过小，部分功能可能无法正常使用");
-          } else {
-            const listMinWidth = (350 / groupElement!.offsetWidth) * 100;
-            const editorMinWidth = (830 / groupElement!.offsetWidth) * 100;
+          if (groupElement!.offsetWidth > 1150) {
+            const listMinWidth = (300 / groupElement!.offsetWidth) * 100;
+            const editorMinWidth = (750 / groupElement!.offsetWidth) * 100;
 
             setListMinWidth(listMinWidth);
             setEditorMinWidth(editorMinWidth);
@@ -33,7 +28,8 @@ const todo = memo(() => {
       }
     };
 
-    const resizeObserver = new ResizeObserver(debounce(handleResize, 100));
+    const resizeObserver = new ResizeObserver(throttle(handleResize, 1000));
+
     resizeObserver.observe(groupElement!);
 
     // 清除事件监听器

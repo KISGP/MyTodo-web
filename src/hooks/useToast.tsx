@@ -28,18 +28,14 @@ const useToast = () => {
     toast.success(message, { style, ...options });
   };
 
-  myToast.promise = (promise: Promise<string>, options?: ToastOptions) => {
-    toast.promise(
-      promise,
-      {
-        loading: "Loading...",
-        success: (res) => <b>{res}</b>,
-        error: (err) => {
-          return <b>{err}</b>;
-        },
-      },
-      { style, ...options },
-    );
+  myToast.auto = (promise: Promise<{ status: boolean; msg: string }>, options?: ToastOptions) => {
+    promise.then((res) => {
+      if (res.status) {
+        myToast.success(res.msg, options);
+      } else {
+        myToast.error(res.msg, options);
+      }
+    });
   };
 
   return useCallback(myToast, [isDarkMode]);

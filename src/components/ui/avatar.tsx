@@ -24,7 +24,14 @@ const Avatar = memo(() => {
         />
       </DropdownTrigger>
       <DropdownMenu aria-label="User Actions" variant="flat">
-        <DropdownItem key="settings">设置</DropdownItem>
+        <DropdownItem
+          key="settings"
+          onClick={() => {
+            navigate("/settings");
+          }}
+        >
+          设置
+        </DropdownItem>
         <DropdownItem key="help_and_feedback">帮助 & 反馈</DropdownItem>
         <DropdownItem
           key="logout"

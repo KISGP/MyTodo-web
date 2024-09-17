@@ -1,6 +1,8 @@
-import { TodoBaseType } from "@/store";
-
-type DB_TodoType = Omit<TodoBaseType, "isSelected">;
+type DB_TodoType = {
+  id: string;
+  uid: string;
+  content: string;
+};
 
 export default class IndexedDBHelper {
   private DB_NAME = "IndexedDB";
@@ -27,9 +29,7 @@ export default class IndexedDBHelper {
       const db = (event.target as IDBOpenDBRequest).result;
       // 如果不存在对象仓库，则创建一个
       if (!db.objectStoreNames.contains(this.STORE_NAME)) {
-        const store = db.createObjectStore(this.STORE_NAME, { keyPath: "id" });
-
-        store.createIndex("isSaved", "isSaved", { unique: false });
+        db.createObjectStore(this.STORE_NAME, { keyPath: "id" });
       }
     };
   }
@@ -45,44 +45,32 @@ export default class IndexedDBHelper {
   }
 
   // TODO: 当add一条数据时，将数据保存到服务器
-  public add(data: DB_TodoType): Promise<string> {
-    return new Promise((resolve, reject) => {
+  public add(data: DB_TodoType): Promise<boolean> {
+    return new Promise((resolve) => {
       const store = this.getTransactionObjectStore("readwrite");
       const request = store.add(data);
 
-      request.onsuccess = () => {
-        resolve("本地保存成功");
-      };
+      request.onsuccess = () => resolve(true);
 
-      request.onerror = (event) => {
-        reject("本地保存失败: " + event);
-      };
+      request.onerror = () => resolve(false);
     });
   }
 
-  public async update(data: Partial<Omit<DB_TodoType, "id">> & Pick<DB_TodoType, "id">): Promise<string> {
-    try {
-      this.checkDBConnection();
+  public async update(id: string, content: string): Promise<boolean> {
+    const oldData = await this.get(id);
+    if (!oldData) throw new Error("未找到对应数据");
 
-      const oldData = await this.get(data.id);
-      if (!oldData) throw new Error("未找到对应数据");
-
+    return new Promise((resolve) => {
       const store = this.getTransactionObjectStore("readwrite");
+      const request = store.put({ ...oldData, content });
 
-      await new Promise<void>((resolve, reject) => {
-        const request = store.put({ ...oldData, ...data });
-        request.onsuccess = () => resolve();
-        request.onerror = () => reject("更新失败");
-      });
-
-      return "更新成功";
-    } catch (error) {
-      return Promise.reject("更新失败: " + error);
-    }
+      request.onsuccess = () => resolve(true);
+      request.onerror = () => resolve(false);
+    });
   }
 
   public get(id: string): Promise<DB_TodoType | null> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const store = this.getTransactionObjectStore("readonly");
       const request = store.get(id);
 
@@ -91,24 +79,18 @@ export default class IndexedDBHelper {
         resolve(result ? result : null);
       };
 
-      request.onerror = (event) => {
-        reject("读取失败: " + event);
-      };
+      request.onerror = () => resolve(null);
     });
   }
 
-  public delete(id: string): Promise<string> {
-    return new Promise((resolve, reject) => {
+  public delete(id: string): Promise<boolean> {
+    return new Promise((resolve) => {
       const store = this.getTransactionObjectStore("readwrite");
       const request = store.delete(id);
 
-      request.onsuccess = () => {
-        resolve("删除成功");
-      };
+      request.onsuccess = () => resolve(true);
 
-      request.onerror = () => {
-        reject("删除失败");
-      };
+      request.onerror = () => resolve(false);
     });
   }
 }

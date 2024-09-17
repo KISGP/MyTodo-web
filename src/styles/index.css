@@ -4,7 +4,7 @@
 
 @layer components {
   .scrollbar::-webkit-scrollbar-track {
-    @apply bg-default-100/50 rounded-2xl;
+    @apply rounded-2xl bg-transparent;
   }
 
   .scrollbar::-webkit-scrollbar {
@@ -13,10 +13,27 @@
   }
 
   .scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-default-400/50 rounded-2xl;
+    @apply rounded-2xl bg-default-400/50;
   }
 
   .scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-default-400;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar-track {
+    @apply rounded-2xl bg-transparent;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    width: 6px;
+    height: 8px;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar-thumb {
+    @apply rounded-2xl bg-transparent;
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar-thumb:hover {
+    @apply bg-transparent;
   }
 }

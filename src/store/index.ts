@@ -21,13 +21,13 @@ export const useStore = create<StoreType>()(
             // 有 id 说明是已保存的 todo ，清空
             // TODO: 可以提供设置是否自动保存的选项。现在是对未保存的 todo 提供自动保存的功能。
             // TODO: 可以提供设置是否自动打开上一次打开的 todo 。不清空即可。
-            if (state?.todo.id) {
-              state.todo = defaultTodo;
+            if (state?.tempTodo.id) {
+              state.tempTodo = defaultTodo;
             }
 
             // 初始化 todoList
-            if (state?.todoList) {
-              state.todoList = state.todoList.map((item) => ({
+            if (state?.todos) {
+              state.todos = state.todos.map((item) => ({
                 ...item,
                 isSelected: false,
               }));

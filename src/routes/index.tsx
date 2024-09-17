@@ -1,21 +1,16 @@
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import React, { Suspense } from "react";
 import { Spinner } from "@nextui-org/react";
 import { Navigate, useLocation, type RouteObject } from "react-router-dom";
 
 import Home from "@/view/home/index.tsx";
-
 const Todo = lazy(() => import("@/view/home/page/todo"));
-
-import Calendar from "@/view/home/page/calendar";
-
-import Boards from "@/view/home/page/boards";
-// const User = lazy(() => import("@/view/home/user.tsx"));
-import User from "@/view/home/page/user";
-// const Login = lazy(() => import("@/view/login.tsx"));
-import Login from "@/view/login.tsx";
-// const NotFound = lazy(() => import("@/view/NotFound.tsx"));
+const Boards = lazy(() => import("@/view/home/page/boards"));
+const Calendar = lazy(() => import("@/view/home/page/calendar"));
+const Settings = lazy(() => import("@/view/home/page/settings"));
+const Login = lazy(() => import("@/view/login"));
 import NotFound from "@/view/NotFound.tsx";
+
 import { useStore } from "@/store";
 
 function Loading({ children }: { children: React.ReactNode }) {
@@ -62,10 +57,10 @@ const routes: RouteObject[] = [
         ),
       },
       {
-        path: "/user/:id",
+        path: "settings",
         element: (
           <Loading>
-            <User />
+            <Settings />
           </Loading>
         ),
       },
@@ -91,7 +86,11 @@ const routes: RouteObject[] = [
 
 export function RouterGuard({ children }: { children: React.ReactNode }) {
   const pathname = useLocation().pathname;
-  const isLogin = useStore((state) => state.isLogin);
+  const [isLogin, reset_tempTodo, toggle_AllTodoSelected] = useStore((state) => [
+    state.isLogin,
+    state.reset_tempTodo,
+    state.toggle_AllTodoSelected,
+  ]);
 
   if (!["/login", "*"].includes(pathname) && !isLogin) {
     return <Navigate to="/login" replace />;
@@ -100,6 +99,11 @@ export function RouterGuard({ children }: { children: React.ReactNode }) {
   if (["/login"].includes(pathname) && isLogin) {
     return <Navigate to="/todo" replace />;
   }
+
+  useEffect(() => {
+    reset_tempTodo();
+    toggle_AllTodoSelected(false);
+  }, [pathname]);
 
   return children;
 }

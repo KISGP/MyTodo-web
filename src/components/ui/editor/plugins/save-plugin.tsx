@@ -7,24 +7,14 @@ import { useStore } from "@/store";
 export default function SavePlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
-  const saveTodo_content = useStore((state) => state.saveTodo_content);
+  // 把 editor 暴露到window对象里面，以便 store 里面可以修改 editor 的内容
+  window.editor = editor;
 
-  const [content, isEditorContentChanged, toggleEditorContentChanged] = useStore((state) => [
-    state.todo.content,
-    state.isAllowContentChanged,
-    state.toggleIsAllowContentChanged,
-  ]);
-
-  useEffect(() => {
-    if (isEditorContentChanged && content) {
-      toggleEditorContentChanged(false);
-      editor.setEditorState(editor.parseEditorState(content));
-    }
-  }, [content, isEditorContentChanged]);
+  const update_tempTodo = useStore((state) => state.update_tempTodo);
 
   useEffect(() => {
     const autoSave = throttle(() => {
-      saveTodo_content(JSON.stringify(editor.getEditorState().toJSON()));
+      update_tempTodo({ content: JSON.stringify(editor.getEditorState().toJSON()) });
       // TODO: 添加用户自定义多少秒保存一次
     }, 1000);
 

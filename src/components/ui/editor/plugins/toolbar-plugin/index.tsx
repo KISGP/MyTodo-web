@@ -57,7 +57,7 @@ export default function ToolbarPlugin() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const saveTodo = useStore((state) => state.saveTodo);
+  const save_tempTodo = useStore((state) => state.save_tempTodo);
 
   const myToast = useToast();
 
@@ -143,8 +143,8 @@ export default function ToolbarPlugin() {
   }, [editor, $updateToolbar]);
 
   return (
-    <div className="flex items-center justify-between p-2 px-2 align-middle" ref={toolbarRef}>
-      <div className="flex items-center">
+    <div className="flex items-center justify-between px-2 pb-2 align-middle" ref={toolbarRef}>
+      <div className="flex items-center gap-1">
         <UndoButton
           disabled={canUndo}
           onClick={() => {
@@ -231,7 +231,9 @@ export default function ToolbarPlugin() {
         />
         <SaveButton
           onClick={() => {
-            myToast.promise(saveTodo());
+            save_tempTodo().then((res) => {
+              res ? myToast.success("11") : myToast.error("22");
+            });
           }}
         />
       </div>

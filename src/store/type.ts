@@ -5,59 +5,119 @@ export type TodoBaseType = {
   title: string;
   time: string;
   content: string;
+  tags: string[];
   isCloudSynced: boolean;
   isSelected: boolean;
-  isDone: boolean;
   uid: string;
 };
 
+export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tags" | "id">;
+
 export type TodoItemType = Omit<TodoBaseType, "content">;
 
+export type TagType = {
+  id: string; 
+  // 列显示的名称，tag
+  title: string;
+  // 简要描述该列功能
+  description?: string;
+  // 是否隐藏该列
+  isHidden: boolean;
+  // 图标
+  icon: string;
+};
+
 export type DataSlice = {
-  todo: Pick<TodoBaseType, "id" | "title" | "time" | "content">;
+  todos: TodoItemType[];
 
-  todoList: TodoItemType[];
+  /**
+   * @description tag 即是看板也是标签，一个标签对应一个看板
+   * */
+  tags: TagType[];
 
-  // lexical 编辑器的 id, 用于清空编辑器内容
-  editorId: string;
-  // 编辑器内容是否改变 (用于判断是否可以修改当前编辑器内容)
-  isAllowContentChanged: boolean;
-  toggleIsAllowContentChanged: (status: boolean) => void;
+  /**
+   * @description 保存 todo 到 todos，并保存 content 到 indexDB
+   * @returns 如果保存成功则返回 id，否则返回 null
+   * */
+  save_todo: (value: Omit<TempTodoType, "id">) => Promise<string | null>;
 
-  // 将 todo 保存到 localTodo 中初始化 todo
-  saveTodo: () => Promise<string>;
+  /**
+   * @description 根据 id 删除 todo
+   * */
+  delete_todo: (id: string[]) => Promise<boolean>;
 
-  // 保存 todo 的 title
-  saveTodo_title: (title: string) => void;
+  /**
+   * @description 根据 id 更新单个 todo
+   * */
+  update_todo: (id: string, value: Partial<Omit<TodoBaseType, "id" | "uid">>) => Promise<boolean>;
 
-  // 保存 todo 的 time
-  saveTodo_time: (ISOtime: string) => void;
+  /**
+   * @description 将 todos 更新为 fn 的返回值
+   * */
+  update_todos: (fn: (todos: TodoItemType[]) => TodoItemType[]) => void;
 
-  // 保存 todo 的 content
-  saveTodo_content: (serializedEditorState: string) => void;
-  // 清空编辑器内容
-  clearTodo_content: () => void;
+  /**
+   * @description 调换 todos 中两个 todo 的顺序
+   * @param index 两个 todo 的索引, [sourceIndex, destinationIndex] | [sourceId, destinationId]
+   * */
+  reorder_todos: (index: [string, string] | [number, number]) => void;
 
-  // 创建新的 todo
-  createTodo: () => Promise<string>;
+  /**
+   * @description 获取 todos 中的某个 todo 的详细信息
+   * @param index 两个 todo 的索引, [sourceIndex, destinationIndex] | [sourceId, destinationId]
+   * */
+  get_todo: (id: string) => Promise<TodoBaseType | null>;
 
-  // 删除 todo
-  deleteTodo: () => Promise<string>;
+  // ================== 仅用于 /todo 页面 ==================
 
-  // 修改完成状态
-  toggleTodoItemDone: () => Promise<void>;
+  tempTodo: TempTodoType;
 
-  // 更改 todoList 的顺序
-  reorderTodoList: (sourceIndex: number, destinationIndex: number) => void;
+  /**
+   * @description 将 todos 更新为 fn 的返回值
+   * */
+  update_tempTodo: (value: Partial<TempTodoType>) => void;
 
-  // 修改 todoItem 的选中状态
-  toggleTodoItemSelection: (index: number, status: boolean) => void;
+  /**
+   * @description 更改当前显示（标题，时间，编辑器）内容为传入id 的 todo 的内容
+   * */
+  change_tempTodo: (id: string) => void;
 
-  // 修改所有 todoItem 的选中状态
-  toggleAllTodoItemSelection: (status: boolean) => void;
+  /**
+   * @description 保存当前 tempTodo
+   * */
+  save_tempTodo: () => Promise<{ status: boolean; msg: string }>;
 
-  // 更改当前显示的 todo
-  changeCurrentTodo: (index: number) => Promise<void>;
+  /**
+   * @description 创建一个临时 todo（保存当前 tempTodo, 并重置显示内容）
+   * */
+  create_tempTodo: () => Promise<{ status: boolean; msg: string }>;
+
+  /**
+   * @description 对显示的 todo 列表进行全选或全不选
+   * */
+  toggle_AllTodoSelected: (status: boolean) => void;
+
+  /**
+   * @description 删除选中的 todo
+   * */
+  delete_selectedTodo: () => Promise<{ status: boolean; msg: string }>;
+
+  /**
+   * @description 重置显示内容
+   * */
+  reset_tempTodo: () => void;
+
+  // ================== 仅用于 /board 页面 ==================
+
+  /**
+   * @description 重新排列看板的顺序
+   * */
+  reorder_tags: (sourceIndex: number, destinationIndex: number) => void;
+
+  /**
+   * @description 在看板界面创建 todo
+   * */
+  save_item: (value: Pick<TempTodoType, "tags" | "title">) => void;
 };
 
 export type UserSlice = {

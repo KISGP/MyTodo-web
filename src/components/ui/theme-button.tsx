@@ -14,7 +14,7 @@ const ThemeButton = memo(() => {
     }
   };
   return (
-    <Button isIconOnly onClick={changeTheme}>
+    <Button isIconOnly size="sm" radius="full" onClick={changeTheme}>
       <Theme className="h-6 w-6" />
     </Button>
   );

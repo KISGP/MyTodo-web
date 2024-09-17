@@ -37,7 +37,7 @@ const Main = memo(() => {
         </div>
       </header>
 
-      <div className={cn("mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1")}>
+      <div className={cn("mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors")}>
         <Outlet />
       </div>
     </div>
@@ -47,7 +47,7 @@ const Main = memo(() => {
 const Index = memo(() => {
   return (
     <StyleProvider>
-      <div className="relative flex h-screen w-screen bg-base-background">
+      <div className="relative flex h-screen w-screen bg-base-background transition-background">
         <Sidebar menus={Menus} />
         <Main />
       </div>

@@ -1,24 +1,23 @@
-import React, { useState, useRef, useEffect } from "react";
-import { cn } from "@nextui-org/react";
-import { createPortal } from "react-dom";
+import React from "react";
 import { $createCodeNode } from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
 import { LexicalEditor, $getSelection, $isRangeSelection, $createParagraphNode } from "lexical";
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list";
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 
-import ChevronDownIcon from "@/assets/svg/chevron-down.svg?react";
-import ParagraphIcon from "@/assets/svg/text-paragraph.svg?react";
+import CodeIcon from "@/assets/svg/code.svg?react";
 import H1Icon from "@/assets/svg/type-h1.svg?react";
 import H2Icon from "@/assets/svg/type-h2.svg?react";
 import H3Icon from "@/assets/svg/type-h3.svg?react";
 import H4Icon from "@/assets/svg/type-h4.svg?react";
 import H5Icon from "@/assets/svg/type-h5.svg?react";
 import H6Icon from "@/assets/svg/type-h6.svg?react";
-import ChatSquareQuoteIcon from "@/assets/svg/chat-square-quote.svg?react";
 import ListUlIcon from "@/assets/svg/list-ul.svg?react";
 import ListOlIcon from "@/assets/svg/list-ol.svg?react";
-import CodeIcon from "@/assets/svg/code.svg?react";
+import ChevronDownIcon from "@/assets/svg/chevron-down.svg?react";
+import ParagraphIcon from "@/assets/svg/text-paragraph.svg?react";
+import ChatSquareQuoteIcon from "@/assets/svg/chat-square-quote.svg?react";
 
 const supportedBlockTypes = new Set(["paragraph", "quote", "code", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"]);
 
@@ -52,52 +51,12 @@ const blockTypeToBlockName: { [key: string]: string } = {
   paragraph: "段落",
 };
 
-type BlockOptionsDropdownListType = {
-  editor: LexicalEditor;
+type ToolbarButtonProps = {
   blockType: string;
-  BlockOptionButtonRef: React.RefObject<HTMLButtonElement>;
-  setShowBlockOptionsDropDown: (show: boolean) => void;
+  editor: LexicalEditor;
 };
 
-function BlockOptionsDropdownList({
-  editor,
-  blockType,
-  BlockOptionButtonRef,
-  setShowBlockOptionsDropDown,
-}: BlockOptionsDropdownListType) {
-  const dropDownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const dropDown = dropDownRef.current;
-    const blockOptionButton = BlockOptionButtonRef.current;
-
-    if (toolbar !== null && dropDown !== null && blockOptionButton !== null) {
-      const { left, bottom } = blockOptionButton.getBoundingClientRect();
-      dropDown.style.top = `${bottom + 10}px`;
-      dropDown.style.left = `${left}px`;
-    }
-  }, [dropDownRef, BlockOptionButtonRef]);
-
-  useEffect(() => {
-    const dropDown = dropDownRef.current;
-    const BlockOptionButton = BlockOptionButtonRef.current;
-
-    if (dropDown !== null && toolbar !== null && BlockOptionButton !== null) {
-      const handle = (event: any) => {
-        const target = event.target;
-
-        if (!dropDown.contains(target) && !BlockOptionButton.contains(target)) {
-          setShowBlockOptionsDropDown(false);
-        }
-      };
-      document.addEventListener("click", handle);
-
-      return () => {
-        document.removeEventListener("click", handle);
-      };
-    }
-  }, [dropDownRef, setShowBlockOptionsDropDown, BlockOptionButtonRef]);
-
+export default function BlockOptionButton({ blockType, editor }: ToolbarButtonProps) {
   const formatOptions = [
     {
       type: "paragraph",
@@ -111,7 +70,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -126,7 +84,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -141,7 +98,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -156,7 +112,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -171,7 +126,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -186,7 +140,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -201,7 +154,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -212,7 +164,6 @@ function BlockOptionsDropdownList({
         } else {
           editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -223,7 +174,6 @@ function BlockOptionsDropdownList({
         } else {
           editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -238,7 +188,6 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
     {
@@ -253,86 +202,37 @@ function BlockOptionsDropdownList({
             }
           });
         }
-        setShowBlockOptionsDropDown(false);
       },
     },
   ];
 
-  return (
-    <div
-      ref={dropDownRef}
-      className={cn(
-        "absolute z-10 block rounded-xl border shadow-md",
-        "min-h-10 min-w-24 p-2",
-        "bg-content1 dark:border-zinc-800 dark:bg-zinc-900",
-      )}
-    >
-      {formatOptions.map(({ type, onClick }) => {
-        const Icon = blockTypeToIcon[type];
-        return (
-          <button
-            key={type}
-            onClick={onClick}
-            className={cn(
-              "flex cursor-pointer items-center align-middle",
-              "mb-1 w-full gap-1 rounded-lg p-2 last:mb-0",
-              "text-zinc-400 hover:bg-zinc-200/60 dark:hover:bg-zinc-800/80",
-            )}
-          >
-            <Icon className="mx-1 h-5 w-5" />
-            <span
-              title={blockTypeToBlockName[type]}
-              className="ml-2 mr-10 inline-block max-w-40 overflow-hidden text-ellipsis text-nowrap text-start"
-            >
-              {blockTypeToBlockName[type]}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-type ToolbarButtonProps = {
-  blockType: string;
-  editor: LexicalEditor;
-};
-
-export default function BlockOptionButton({ blockType, editor }: ToolbarButtonProps) {
-  const BlockOptionButtonRef = useRef<HTMLButtonElement>(null);
-  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] = useState(false);
-
   if (supportedBlockTypes.has(blockType)) {
     const Icon = blockTypeToIcon[blockType];
     return (
-      <>
-        <button
-          ref={BlockOptionButtonRef}
-          className={cn(
-            "flex cursor-pointer items-center align-middle outline-none",
-            "gap-1 rounded-lg border-0 p-2",
-            "text-default-500 hover:bg-default-100 active:bg-default-100 disabled:cursor-not-allowed dark:text-default-400",
-          )}
-          onClick={() => setShowBlockOptionsDropDown(!showBlockOptionsDropDown)}
-          aria-label="Formatting Options"
-        >
-          <Icon className="mx-1 h-5 w-5"></Icon>
-          <span className="inline-block w-fit text-nowrap text-sm">{blockTypeToBlockName[blockType]}</span>
-          <ChevronDownIcon className="mx-2 h-4 w-4" />
-        </button>
-        {showBlockOptionsDropDown &&
-          createPortal(
-            <BlockOptionsDropdownList
-              editor={editor}
-              blockType={blockType}
-              BlockOptionButtonRef={BlockOptionButtonRef}
-              setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
-            />,
-            document.body,
-          )}
-      </>
+      <Dropdown>
+        <DropdownTrigger>
+          <Button variant="light">
+            <Icon className="size-5 fill-default-500 dark:fill-default-400" />
+            <span className="text-default-500 dark:text-default-400">{blockTypeToBlockName[blockType]}</span>
+            <ChevronDownIcon className="size-3 fill-default-500 dark:fill-default-400" />
+          </Button>
+        </DropdownTrigger>
+        <DropdownMenu variant="flat">
+          {formatOptions.map((option) => {
+            const Icon = blockTypeToIcon[option.type];
+            return (
+              <DropdownItem
+                key={option.type}
+                onClick={option.onClick}
+                title={blockTypeToBlockName[option.type]}
+                startContent={<Icon className="mx-1 h-5 w-5" />}
+              />
+            );
+          })}
+        </DropdownMenu>
+      </Dropdown>
     );
   } else {
-    return <> </>;
+    return <></>;
   }
 }
