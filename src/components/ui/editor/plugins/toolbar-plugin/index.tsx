@@ -230,11 +230,7 @@ export default function ToolbarPlugin() {
           }}
         />
         <SaveButton
-          onClick={() => {
-            save_tempTodo().then((res) => {
-              res ? myToast.success("11") : myToast.error("22");
-            });
-          }}
+          onClick={() => myToast.auto(save_tempTodo())}
         />
       </div>
     </div>
