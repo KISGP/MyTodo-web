@@ -8,7 +8,7 @@ import { formatDateString } from "@/lib/utils";
 import LexicalEditor from "./editor";
 import useToast from "@/hooks/useToast";
 import AddIcon from "@/assets/svg/add.svg?react";
-import { tags } from "@/store/constant";
+import Tag from "./tag";
 
 const TodoEditor = memo(() => {
   const [time, selectedTags, save_tempTodo, update_tempTodo] = useStore((state) => [
@@ -17,7 +17,7 @@ const TodoEditor = memo(() => {
     state.save_tempTodo,
     state.update_tempTodo,
   ]);
-  const title = useStore(useShallow((state) => state.tempTodo.title));
+  const [title, tags] = useStore(useShallow((state) => [state.tempTodo.title, state.tags]));
 
   const myToast = useToast();
 
@@ -47,17 +47,9 @@ const TodoEditor = memo(() => {
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
         <LexicalEditor />
         <div className="flex items-center gap-2 px-2">
-          {Array.from(selectedTags).map((tag) => {
-            return (
-              <div
-                key={tag}
-                className="flex select-none items-center gap-1 rounded-full border border-default-200 bg-default-100/50 px-2 py-1 dark:border-default-100"
-              >
-                <div className={tags[tag].icon + " !size-3"}></div>
-                <div className="text-xs">{tags[tag].title}</div>
-              </div>
-            );
-          })}
+          {selectedTags.map((id) => (
+            <Tag tag={tags.find((item) => item.id === id)!} icon="!size-3" />
+          ))}
           <Popover placement="top-start">
             <PopoverTrigger>
               <Button isIconOnly radius="full" size="sm" className="bg-default-100">
@@ -67,23 +59,22 @@ const TodoEditor = memo(() => {
             <PopoverContent className="p-1">
               <Listbox
                 variant="flat"
-                aria-label="Listbox menu with tag"
+                aria-label="Listbox"
                 selectionMode="single"
                 selectedKeys={selectedTags}
                 onSelectionChange={(keys: any) => update_tempTodo({ tags: Array.from(keys) })}
               >
-                {Object.keys(tags).map((key) => {
-                  const tag = tags[key];
-                  return (
+                {tags
+                  .filter((item) => item.id !== "NoTag")
+                  .map((tag) => (
                     <ListboxItem
-                      key={key}
+                      key={tag.id}
                       title={tag.title}
                       description={tag.description}
                       startContent={<div className={tag.icon}></div>}
                       classNames={{ description: "text-xs !text-default-400" }}
                     />
-                  );
-                })}
+                  ))}
               </Listbox>
             </PopoverContent>
           </Popover>

@@ -19,7 +19,7 @@ export const createDataSlice: DataStateType = (set, get) => ({
 
   tags: [
     {
-      ...tags.All,
+      ...tags.NoTag,
       isHidden: false,
     },
     {

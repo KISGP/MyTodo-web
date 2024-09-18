@@ -1,7 +1,8 @@
 import ReactDOM from "react-dom";
-import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import List, { type ListRowProps } from "react-virtualized/dist/commonjs/List";
+import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import { CSSProperties, memo, useCallback, useState } from "react";
+import { DragDropContext, Droppable, Draggable, type DraggableProvided } from "@hello-pangea/dnd";
 import {
   Checkbox,
   Button,
@@ -11,19 +12,19 @@ import {
   DropdownTrigger,
   DropdownItem,
   DropdownMenu,
+  Selection,
 } from "@nextui-org/react";
-import { DragDropContext, Droppable, Draggable, type DropResult, type DraggableProvided } from "@hello-pangea/dnd";
 
-import useToast from "@/hooks/useToast";
 import Trash from "@/assets/svg/trash.svg?react";
 import AddIcon from "@/assets/svg/add.svg?react";
 import SelectAllIcon from "@/assets/svg/select-all.svg?react";
 import SelectNoIcon from "@/assets/svg/select-no.svg?react";
 import FilterIcon from "@/assets/svg/filter.svg?react";
 import { useStore, type TodoItemType } from "@/store";
+import useToast from "@/hooks/useToast";
+import Tag from "./tag";
 
 import { DataSlice } from "@/store";
-import { tags } from "@/store/constant";
 
 const ListItem = memo<{
   isDragging?: boolean;
@@ -74,6 +75,8 @@ const ListItem = memo<{
 });
 
 export default memo(() => {
+  const myToast = useToast();
+
   const [reorder_todos, delete_selectedTodo, create_tempTodo, change_tempTodo, update_todo, toggle_AllTodoSelected] =
     useStore((state) => [
       state.reorder_todos,
@@ -84,17 +87,13 @@ export default memo(() => {
       state.toggle_AllTodoSelected,
     ]);
 
-  const list = useStore((state) => state.todos);
-  const [selectedTag, setSelectedTag] = useState("*");
-  const activeList = list.filter((item) => (selectedTag === "*" ? true : item.tags[0] === selectedTag));
-
-  const myToast = useToast();
-
-  const onDragEnd = (result: DropResult) => {
-    if (result.destination) {
-      reorder_todos([result.source.index, result.destination.index]);
-    }
-  };
+  // 根据标签筛选 todo
+  const [list, tags] = useStore((state) => [state.todos, state.tags]);
+  const [selectedTags, setSelectedTags] = useState<Selection>(new Set([]));
+  const activeList = list.filter((item) => {
+    const tag = Array.from(selectedTags)[0];
+    return tag ? item.tags.includes(tag as string) : true;
+  });
 
   const rowRenderer = useCallback(
     (todoList: TodoItemType[]) =>
@@ -127,7 +126,14 @@ export default memo(() => {
   return (
     <div className="size-full rounded-xl border border-default-200 py-2 transition-colors dark:border-default-100">
       <div className="mb-1 flex h-10 w-full items-center justify-between px-2">
-        <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
+        <div className="flex items-center gap-2">
+          <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
+          {tags
+            .filter((tag) => tag.id === Array.from(selectedTags)[0])
+            .map((tag) => (
+              <Tag tag={tag} icon="!size-3" />
+            ))}
+        </div>
         <div className="flex gap-1">
           <Dropdown classNames={{ content: "min-w-fit" }}>
             <DropdownTrigger>
@@ -135,22 +141,19 @@ export default memo(() => {
                 <FilterIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />
               </Button>
             </DropdownTrigger>
-            <DropdownMenu variant="flat" classNames={{ list: "w-fit" }}>
-              {Object.keys(tags).map((key) => {
-                const tag = tags[key];
-                return (
-                  <DropdownItem
-                    key={tag.id}
-                    title={tag.title}
-                    startContent={<div className={tag.icon}></div>}
-                    onClick={() => {
-                      toggle_AllTodoSelected(false);
-
-                      setSelectedTag(tag.id);
-                    }}
-                  />
-                );
-              })}
+            <DropdownMenu
+              variant="flat"
+              selectionMode="single"
+              selectedKeys={selectedTags}
+              onSelectionChange={(keys) => {
+                toggle_AllTodoSelected(false);
+                setSelectedTags(keys);
+              }}
+              classNames={{ list: "w-fit" }}
+            >
+              {tags.map((tag) => (
+                <DropdownItem key={tag.id} title={tag.title} startContent={<div className={tag.icon}></div>} />
+              ))}
             </DropdownMenu>
           </Dropdown>
 
@@ -190,7 +193,9 @@ export default memo(() => {
       </div>
 
       <div className="h-[calc(100%_-_40px)] w-full pl-2">
-        <DragDropContext onDragEnd={onDragEnd}>
+        <DragDropContext
+          onDragEnd={(result) => result.destination && reorder_todos([result.source.index, result.destination.index])}
+        >
           <Droppable
             mode="virtual"
             droppableId="column"

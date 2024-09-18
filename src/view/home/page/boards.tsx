@@ -44,12 +44,15 @@ const Column = memo<{
 
   return (
     <Draggable draggableId={columnData.id} index={index}>
-      {(provided) => (
+      {(provided, snapshot) => (
         <div
           key={columnData.id}
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className="mx-2 flex h-full flex-col rounded-xl border border-default-200 bg-content1 py-2 transition-colors dark:border-default-100"
+          className={cn(
+            "mx-2 flex h-full flex-col rounded-xl border border-default-200 bg-content1 py-2 transition-colors dark:border-default-100",
+            snapshot.isDragging ? "border-2 !border-primary-300" : "",
+          )}
         >
           <div {...provided.dragHandleProps} className="my-1 flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
@@ -141,7 +144,7 @@ export default function Board() {
 
   const boardColumns = tags.map((column) => ({
     ...column,
-    items: todos.filter((item) => item.tags.includes(column.id)),
+    items: todos.filter((item) => (column.id === "NoTag" ? !item.tags.length : item.tags.includes(column.id))),
   }));
 
   const onDragEnd = (result: DropResult) => {
@@ -177,7 +180,7 @@ export default function Board() {
             ref={provided.innerRef}
             {...provided.droppableProps}
             // FIXME: react-beautiful-dnd 不支持嵌套滚动，但不影响使用
-            className="scrollbar flex size-full overflow-x-auto overflow-y-hidden py-3 px-1"
+            className="scrollbar flex size-full overflow-x-auto overflow-y-hidden px-1 py-3"
           >
             {boardColumns.map((column, index) => (
               <Column key={column.id} columnData={column} index={index} />
