@@ -49,7 +49,7 @@ const Column = memo<{
           key={columnData.id}
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className="mx-2 flex h-full flex-col rounded-xl border border-default-200 bg-content1 py-2 transition-colors first:ml-0 last:mr-0 dark:border-default-100"
+          className="mx-2 flex h-full flex-col rounded-xl border border-default-200 bg-content1 py-2 transition-colors dark:border-default-100"
         >
           <div {...provided.dragHandleProps} className="my-1 flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export default function Board() {
             ref={provided.innerRef}
             {...provided.droppableProps}
             // FIXME: react-beautiful-dnd 不支持嵌套滚动，但不影响使用
-            className="scrollbar flex size-full overflow-x-auto overflow-y-hidden p-3"
+            className="scrollbar flex size-full overflow-x-auto overflow-y-hidden py-3 px-1"
           >
             {boardColumns.map((column, index) => (
               <Column key={column.id} columnData={column} index={index} />
