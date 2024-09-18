@@ -39,7 +39,7 @@ const Column = memo<{
 }>(({ index, columnData }) => {
   const [inputValue, setInputValue] = useState("");
   const [isCreateItem, setIsCreateItem] = useState(false);
-  const [save_item] = useStore((state) => [state.save_item]);
+  const [save_item, update_tags] = useStore((state) => [state.save_item, state.update_tags]);
 
   return (
     <Draggable draggableId={columnData.id} index={index}>
@@ -65,9 +65,8 @@ const Column = memo<{
                 </div>
               </DropdownTrigger>
               <DropdownMenu variant="flat" aria-label="Dropdown menu">
-                <DropdownItem key="new">隐藏</DropdownItem>
-                <DropdownItem key="delete" className="text-danger" color="danger">
-                  删除
+                <DropdownItem key="new" onClick={() => update_tags(columnData.id, { isHidden: true })}>
+                  隐藏
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -160,7 +159,7 @@ export default function Board() {
     }
 
     // 拖拽标签列内的 todo
-    
+
     // 获取拖拽的todo所在列的索引
     const sourceColumnIndex = boardColumns.findIndex((column) => column.id === source.droppableId);
     const destColumnIndex = boardColumns.findIndex((column) => column.id === destination.droppableId);
