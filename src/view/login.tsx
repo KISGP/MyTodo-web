@@ -13,7 +13,7 @@ const login = memo(() => {
   return (
     <div className="relative flex h-screen w-screen">
       <div className="flex-grow">
-        <img className="size-full object-cover" src={"https://w.wallhaven.cc/full/d6/wallhaven-d6y12l.jpg"} />
+        <img className="size-full object-cover" src={"/bg.jpg"} />
       </div>
       <div className="flex w-[40%] flex-col justify-center bg-content1">
         <div className="mx-auto h-[300px] w-4/5">
