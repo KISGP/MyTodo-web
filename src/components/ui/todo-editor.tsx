@@ -8,12 +8,12 @@ import { formatDateString } from "@/lib/utils";
 import LexicalEditor from "./editor";
 import useToast from "@/hooks/useToast";
 import AddIcon from "@/assets/svg/add.svg?react";
-import Tag from "./tag";
+import Tag, { TagIcon } from "./tag";
 
 const TodoEditor = memo(() => {
-  const [time, selectedTags, save_tempTodo, update_tempTodo] = useStore((state) => [
+  const [time, selectedTagsId, save_tempTodo, update_tempTodo] = useStore((state) => [
     state.tempTodo.time,
-    state.tempTodo.tags,
+    state.tempTodo.tagsId,
     state.save_tempTodo,
     state.update_tempTodo,
   ]);
@@ -47,8 +47,8 @@ const TodoEditor = memo(() => {
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
         <LexicalEditor />
         <div className="flex items-center gap-2 px-2">
-          {selectedTags.map((id) => (
-            <Tag tag={tags.find((item) => item.id === id)!} icon="!size-3" />
+          {selectedTagsId.map((id) => (
+            <Tag tag={tags.find((item) => item.id === id)!} classNames={{ icon: "size-3" }} />
           ))}
           <Popover placement="top-start">
             <PopoverTrigger>
@@ -61,8 +61,8 @@ const TodoEditor = memo(() => {
                 variant="flat"
                 aria-label="Listbox"
                 selectionMode="single"
-                selectedKeys={selectedTags}
-                onSelectionChange={(keys: any) => update_tempTodo({ tags: Array.from(keys) })}
+                selectedKeys={selectedTagsId}
+                onSelectionChange={(keys: any) => update_tempTodo({ tagsId: Array.from(keys) })}
               >
                 {tags
                   .filter((item) => item.id !== "NoTag")
@@ -71,7 +71,7 @@ const TodoEditor = memo(() => {
                       key={tag.id}
                       title={tag.title}
                       description={tag.description}
-                      startContent={<div className={tag.icon}></div>}
+                      startContent={<TagIcon color={tag.color} />}
                       classNames={{ description: "text-xs !text-default-400" }}
                     />
                   ))}

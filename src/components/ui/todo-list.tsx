@@ -22,7 +22,7 @@ import SelectNoIcon from "@/assets/svg/select-no.svg?react";
 import FilterIcon from "@/assets/svg/filter.svg?react";
 import { useStore, type TodoItemType } from "@/store";
 import useToast from "@/hooks/useToast";
-import Tag from "./tag";
+import Tag, { TagIcon } from "./tag";
 
 import { DataSlice } from "@/store";
 
@@ -92,7 +92,7 @@ export default memo(() => {
   const [selectedTags, setSelectedTags] = useState<Selection>(new Set([]));
   const activeList = list.filter((item) => {
     const tag = Array.from(selectedTags)[0];
-    return tag ? item.tags.includes(tag as string) : true;
+    return tag ? item.tagsId.includes(tag as string) : true;
   });
 
   const rowRenderer = useCallback(
@@ -131,7 +131,7 @@ export default memo(() => {
           {tags
             .filter((tag) => tag.id === Array.from(selectedTags)[0])
             .map((tag) => (
-              <Tag tag={tag} icon="!size-3" />
+              <Tag tag={tag} classNames={{ icon: "size-3" }} />
             ))}
         </div>
         <div className="flex gap-1">
@@ -149,10 +149,9 @@ export default memo(() => {
                 toggle_AllTodoSelected(false);
                 setSelectedTags(keys);
               }}
-              classNames={{ list: "w-fit" }}
             >
               {tags.map((tag) => (
-                <DropdownItem key={tag.id} title={tag.title} startContent={<div className={tag.icon}></div>} />
+                <DropdownItem key={tag.id} title={tag.title} startContent={<TagIcon color={tag.color} />} />
               ))}
             </DropdownMenu>
           </Dropdown>

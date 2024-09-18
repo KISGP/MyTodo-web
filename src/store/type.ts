@@ -5,18 +5,18 @@ export type TodoBaseType = {
   title: string;
   time: string;
   content: string;
-  tags: string[];
+  tagsId: string[];
   isCloudSynced: boolean;
   isSelected: boolean;
   uid: string;
 };
 
-export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tags" | "id">;
+export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tagsId" | "id">;
 
 export type TodoItemType = Omit<TodoBaseType, "content">;
 
 export type TagType = {
-  id: string; 
+  id: string;
   // 列显示的名称，tag
   title: string;
   // 简要描述该列功能
@@ -24,7 +24,7 @@ export type TagType = {
   // 是否隐藏该列
   isHidden: boolean;
   // 图标
-  icon: string;
+  color: string;
 };
 
 export type DataSlice = {
@@ -34,6 +34,8 @@ export type DataSlice = {
    * @description tag 即是看板也是标签，一个标签对应一个看板
    * */
   tags: TagType[];
+
+  // ================== 数据只能由下面方法修改 ==================
 
   /**
    * @description 保存 todo 到 todos，并保存 content 到 indexDB
@@ -67,6 +69,22 @@ export type DataSlice = {
    * @param index 两个 todo 的索引, [sourceIndex, destinationIndex] | [sourceId, destinationId]
    * */
   get_todo: (id: string) => Promise<TodoBaseType | null>;
+
+  /**
+   * @description 根据 id 更新 tags
+   * */
+  update_tags: (id: string, value: Partial<Omit<TagType, "id">>) => void;
+
+  /**
+   * @description 添加自定义 tag
+   * */
+  add_tag: (value: Omit<TagType, "id" | "isHidden">) => void;
+
+  /**
+   * @description 根据 id 删除 tags
+   * @param deleteTodo 是否删除 todo。如果为 false，则将 todo 的 tagsId 中的该 tag 删除。如果为 true，则删除所有包含该 tag 的 todo
+   * */
+  delete_tag: (id: string, deleteTodo: boolean) => void;
 
   // ================== 仅用于 /todo 页面 ==================
 
@@ -112,12 +130,12 @@ export type DataSlice = {
   /**
    * @description 重新排列看板的顺序
    * */
-  reorder_tags: (sourceIndex: number, destinationIndex: number) => void;
+  reorder_tags: (sourceId: string, destinationId: string) => void;
 
   /**
    * @description 在看板界面创建 todo
    * */
-  save_item: (value: Pick<TempTodoType, "tags" | "title">) => void;
+  save_item: (value: Pick<TempTodoType, "tagsId" | "title">) => void;
 };
 
 export type UserSlice = {

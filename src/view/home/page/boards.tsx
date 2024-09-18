@@ -1,4 +1,5 @@
 import { memo, useState } from "react";
+import { cn, Input, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
 import {
   DragDropContext,
   Draggable,
@@ -10,10 +11,8 @@ import {
 
 import MoreIcon from "@/assets/svg/more.svg?react";
 import AddIcon from "@/assets/svg/add.svg?react";
-import { cn, Input } from "@nextui-org/react";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
-
 import { useStore, TagType, TodoItemType } from "@/store";
+import { TagIcon } from "@/components/ui/tag";
 
 const Item = memo<{ provided: DraggableProvided; snapshot: DraggableStateSnapshot; item: TodoItemType }>(
   ({ provided, snapshot, item }) => {
@@ -56,7 +55,7 @@ const Column = memo<{
         >
           <div {...provided.dragHandleProps} className="my-1 flex items-center justify-between px-2">
             <div className="flex items-center gap-2">
-              <span className={columnData.icon}></span>
+              <TagIcon color={columnData.color} />
               <span className="inline-block select-none font-semibold text-default-500">{columnData.title}</span>
             </div>
             <Dropdown>
@@ -115,7 +114,7 @@ const Column = memo<{
                   if (e.key === "Escape") setIsCreateItem(false);
 
                   if (e.key === "Enter") {
-                    save_item({ title: inputValue, tags: [columnData.id] });
+                    save_item({ title: inputValue, tagsId: [columnData.id] });
 
                     setIsCreateItem(false);
                   }
@@ -142,21 +141,27 @@ export default function Board() {
     state.reorder_todos,
   ]);
 
-  const boardColumns = tags.map((column) => ({
-    ...column,
-    items: todos.filter((item) => (column.id === "NoTag" ? !item.tags.length : item.tags.includes(column.id))),
-  }));
+  const boardColumns = tags
+    .filter((tag) => !tag.isHidden)
+    .map((column) => ({
+      ...column,
+      items: todos.filter((item) => (column.id === "NoTag" ? !item.tagsId.length : item.tagsId.includes(column.id))),
+    }));
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
     const { source, destination } = result;
 
+    // 拖拽不同标签列
     if (result.type === "COLUMN") {
-      reorder_tags(source.index, destination.index);
+      reorder_tags(boardColumns[source.index].id, boardColumns[destination.index].id);
       return;
     }
 
+    // 拖拽标签列内的 todo
+    
+    // 获取拖拽的todo所在列的索引
     const sourceColumnIndex = boardColumns.findIndex((column) => column.id === source.droppableId);
     const destColumnIndex = boardColumns.findIndex((column) => column.id === destination.droppableId);
 
@@ -168,7 +173,9 @@ export default function Board() {
       ]);
     } else {
       // 跨列拖拽(修改 todo 的 tag)
-      update_todo(boardColumns[sourceColumnIndex].items[source.index].id, { tags: [boardColumns[destColumnIndex].id] });
+      update_todo(boardColumns[sourceColumnIndex].items[source.index].id, {
+        tagsId: [boardColumns[destColumnIndex].id],
+      });
     }
   };
 

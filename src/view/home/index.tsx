@@ -11,11 +11,13 @@ import Sidebar, { type MenuItemProps } from "@/components/ui/sidebar";
 import TodoIcon from "@/assets/svg/todo.svg?react";
 import CalendarIcon from "@/assets/svg/calendar.svg?react";
 import BoardsIcon from "@/assets/svg/boards.svg?react";
+import SettingsIcon from "@/assets/svg/settings.svg?react";
 
 const Menus: MenuItemProps[] = [
   { path: "/", Icon: TodoIcon, title: "待办清单" },
   { path: "/boards", Icon: BoardsIcon, title: "看板" },
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
+  { path: "/settings", Icon: SettingsIcon, title: "设置" },
 ];
 
 const Main = memo(() => {
@@ -37,7 +39,7 @@ const Main = memo(() => {
         </div>
       </header>
 
-      <div className={cn("mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors")}>
+      <div className={"mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors h-[calc(100vh_-_60px)]"}>
         <Outlet />
       </div>
     </div>

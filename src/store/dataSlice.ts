@@ -1,7 +1,7 @@
 import IndexedDBHelper from "@/lib/indexedDB";
 import { generateLocalID } from "@/lib/utils";
 import { DataStateType } from "./type";
-import { tags } from "./constant";
+import { tags } from "@/constant";
 
 const DB = new IndexedDBHelper();
 
@@ -11,7 +11,7 @@ export const defaultTodo = {
   time: new Date().toISOString().slice(0, 10),
   content:
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}',
-  tags: [],
+  tagsId: [],
 };
 
 export const createDataSlice: DataStateType = (set, get) => ({
@@ -151,6 +151,34 @@ export const createDataSlice: DataStateType = (set, get) => ({
     return { content: res.content, ...todo };
   },
 
+  update_tags: (id, value) => {
+    set((state) => {
+      state.tags = state.tags.map((item) => (item.id === id ? { ...item, ...value } : item));
+    });
+  },
+
+  add_tag: (value) => {
+    set((state) => {
+      state.tags.push({ ...value, id: `tag-${generateLocalID()}`, isHidden: false });
+    });
+  },
+
+  delete_tag: (id, deleteTodo) => {
+    set((state) => {
+      state.tags = state.tags.filter((item) => item.id !== id);
+
+      let list = state.todos.map((item) => {
+        if (item.tagsId.includes(id)) {
+          return deleteTodo ? null : { ...item, tags: item.tagsId.filter((tag) => tag !== id) };
+        } else {
+          return item;
+        }
+      });
+
+      state.todos = list.filter((item) => item !== null);
+    });
+  },
+
   // ================== 仅用于 /todo 页面 ==================
 
   tempTodo: defaultTodo,
@@ -172,7 +200,7 @@ export const createDataSlice: DataStateType = (set, get) => ({
         title: todo.title,
         time: todo.time,
         content: todo.content,
-        tags: todo.tags,
+        tagsId: todo.tagsId,
       },
     });
 
@@ -256,8 +284,11 @@ export const createDataSlice: DataStateType = (set, get) => ({
 
   // ================== 仅用于 /board 页面 ==================
 
-  reorder_tags: (sourceIndex, destinationIndex) => {
+  reorder_tags: (sourceId, destinationId) => {
     const list = [...get().tags];
+
+    const sourceIndex = list.findIndex((item) => item.id === sourceId);
+    const destinationIndex = list.findIndex((item) => item.id === destinationId);
 
     const [removed] = list.splice(sourceIndex, 1);
     list.splice(destinationIndex, 0, removed);
