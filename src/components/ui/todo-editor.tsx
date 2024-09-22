@@ -7,7 +7,7 @@ import { formatDateString } from "@/lib/utils";
 
 import LexicalEditor from "./editor";
 import useToast from "@/hooks/useToast";
-import AddIcon from "@/assets/svg/add.svg?react";
+import ChevronDownIcon from "@/assets/svg/chevron-down.svg?react";
 import Tag, { TagIcon } from "./tag";
 
 const TodoEditor = memo(() => {
@@ -27,7 +27,7 @@ const TodoEditor = memo(() => {
         <input
           id="todo-title-input"
           type="text"
-          placeholder="标题"
+          placeholder="主题"
           value={title || ""}
           className="h-3/4 flex-grow rounded-xl bg-transparent px-4 text-2xl font-semibold caret-default-500 outline-none placeholder:text-default-300"
           onChange={(e) => update_tempTodo({ title: e.target.value })}
@@ -53,7 +53,7 @@ const TodoEditor = memo(() => {
           <Popover placement="top-start">
             <PopoverTrigger>
               <Button isIconOnly radius="full" size="sm" className="bg-default-100">
-                <AddIcon className="size-4 fill-default-500" />
+                <ChevronDownIcon className="size-4 fill-default-400 rotate-180" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-1">

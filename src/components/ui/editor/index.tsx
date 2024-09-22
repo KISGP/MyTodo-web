@@ -79,7 +79,7 @@ const LexicalEditor = memo(() => {
                 "h-[calc(100vh_-_259px)] max-w-full",
                 "caret-default-800",
               )}
-              aria-placeholder="输入待办详情"
+              aria-placeholder="添加描述"
               placeholder={<Placeholder />}
             />
           }
