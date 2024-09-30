@@ -48,6 +48,8 @@ export const createDataSlice: DataStateType = (set, get) => ({
     },
   ],
 
+  tempTodo: defaultTodo,
+
   save_todo: async (value) => {
     // 为新的 todo 添加一些必要的属性
     const { id, uid, content, ...other } = {
@@ -179,14 +181,43 @@ export const createDataSlice: DataStateType = (set, get) => ({
     });
   },
 
-  // ================== 仅用于 /todo 页面 ==================
+  reset_tempTodo: () => {
+    get().update_tempTodo(defaultTodo);
 
-  tempTodo: defaultTodo,
+    // 初始化编辑器内容
+    if (window.editor) {
+      window.editor.setEditorState(window.editor.parseEditorState(defaultTodo.content));
+    }
+  },
 
   update_tempTodo: (value) => {
     set((state) => {
       state.tempTodo = { ...state.tempTodo, ...value };
     });
+  },
+
+  save_tempTodo: async () => {
+    const { tempTodo, update_todo, toggle_AllTodoSelected, update_tempTodo, save_todo } = get();
+
+    if (tempTodo.title === "") return { status: false, msg: "标题不能为空" };
+
+    if (tempTodo.id) {
+      const status = await update_todo(tempTodo.id, tempTodo);
+
+      return { status, msg: status ? "更新成功" : "更新失败" };
+    } else {
+      toggle_AllTodoSelected(false);
+
+      const id = await save_todo(tempTodo);
+
+      if (id) {
+        update_tempTodo({ id });
+
+        return { status: true, msg: "保存成功" };
+      } else {
+        return { status: false, msg: "保存失败" };
+      }
+    }
   },
 
   change_tempTodo: async (id) => {
@@ -213,29 +244,7 @@ export const createDataSlice: DataStateType = (set, get) => ({
     get().update_todos((todos) => todos.map((item) => ({ ...item, isSelected: item.id === id })));
   },
 
-  save_tempTodo: async () => {
-    const { tempTodo, update_todo, toggle_AllTodoSelected, update_tempTodo, save_todo } = get();
-
-    if (tempTodo.title === "") return { status: false, msg: "标题不能为空" };
-
-    if (tempTodo.id) {
-      const status = await update_todo(tempTodo.id, tempTodo);
-
-      return { status, msg: status ? "更新成功" : "更新失败" };
-    } else {
-      toggle_AllTodoSelected(false);
-
-      const id = await save_todo(tempTodo);
-
-      if (id) {
-        update_tempTodo({ id });
-
-        return { status: true, msg: "保存成功" };
-      } else {
-        return { status: false, msg: "保存失败" };
-      }
-    }
-  },
+  // ================== 仅用于 /todo 页面 ==================
 
   create_tempTodo: async () => {
     const { tempTodo, save_tempTodo, reset_tempTodo, toggle_AllTodoSelected } = get();
@@ -271,15 +280,6 @@ export const createDataSlice: DataStateType = (set, get) => ({
     const status = await delete_todo(selectedIds);
 
     return { status, msg: status ? "删除成功" : "删除失败" };
-  },
-
-  reset_tempTodo: () => {
-    get().update_tempTodo(defaultTodo);
-
-    // 初始化编辑器内容
-    if (window.editor) {
-      window.editor.setEditorState(window.editor.parseEditorState(defaultTodo.content));
-    }
   },
 
   // ================== 仅用于 /board 页面 ==================

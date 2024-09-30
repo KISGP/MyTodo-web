@@ -14,7 +14,7 @@ import BoardsIcon from "@/assets/svg/boards.svg?react";
 import SettingsIcon from "@/assets/svg/settings.svg?react";
 
 const Menus: MenuItemProps[] = [
-  { path: "/", Icon: TodoIcon, title: "待办清单" },
+  { path: "/todo", Icon: TodoIcon, title: "待办清单" },
   { path: "/boards", Icon: BoardsIcon, title: "看板" },
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
   { path: "/settings", Icon: SettingsIcon, title: "设置" },
@@ -39,7 +39,9 @@ const Main = memo(() => {
         </div>
       </header>
 
-      <div className={"mr-2 flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors h-[calc(100vh_-_60px)]"}>
+      <div
+        className={"mr-2 h-[calc(100vh_-_60px)] flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors"}
+      >
         <Outlet />
       </div>
     </div>

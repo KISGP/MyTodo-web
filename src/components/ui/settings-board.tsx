@@ -18,7 +18,7 @@ import {
 
 import { TagType, useStore } from "@/store";
 import { tagColors } from "@/constant";
-import Tag, { TagIcon } from "./tag";
+import { Tag, TagCircle } from "./tag";
 import useToast from "@/hooks/useToast";
 
 const TagItem = memo<{ tag: TagType }>(({ tag }) => {
@@ -51,12 +51,12 @@ const TagItem = memo<{ tag: TagType }>(({ tag }) => {
             <Dropdown classNames={{ content: "min-w-fit" }}>
               <DropdownTrigger>
                 <Button variant="flat" isIconOnly>
-                  <TagIcon color={color} className="size-5" />
+                  <TagCircle color={color} className="size-5" />
                 </Button>
               </DropdownTrigger>
               <DropdownMenu aria-label="tag colors" onAction={(key) => setColor(tagColors[key])}>
                 {Object.keys(tagColors).map((key) => (
-                  <DropdownItem key={key} title={key} startContent={<TagIcon color={tagColors[key]} />} />
+                  <DropdownItem key={key} title={key} startContent={<TagCircle color={tagColors[key]} />} />
                 ))}
               </DropdownMenu>
             </Dropdown>
@@ -81,7 +81,7 @@ const TagItem = memo<{ tag: TagType }>(({ tag }) => {
         ) : (
           <>
             <div className="w-10">
-              <TagIcon color={tag.color} className="mx-auto size-5" />
+              <TagCircle color={tag.color} className="mx-auto size-5" />
             </div>
             <div className="flex flex-grow flex-col gap-2 py-[6px] transition-colors">
               <span className="text-xl text-default-600">{tag.title}</span>
@@ -184,7 +184,7 @@ const SettingsBoard = memo(() => {
                   <span>colors：</span>
                   {Object.keys(tagColors).map((key) => (
                     <Button variant="light" isIconOnly onPress={() => setNewColor(tagColors[key])}>
-                      <TagIcon color={tagColors[key]} />
+                      <TagCircle color={tagColors[key]} />
                     </Button>
                   ))}
                 </div>

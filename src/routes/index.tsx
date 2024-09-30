@@ -101,8 +101,10 @@ export function RouterGuard({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    reset_tempTodo();
-    toggle_AllTodoSelected(false);
+    if (pathname === "/todo") {
+      reset_tempTodo();
+      toggle_AllTodoSelected(false);
+    }
   }, [pathname]);
 
   return children;

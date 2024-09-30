@@ -10,7 +10,7 @@ export const toolbarButtonActiveClass = cn("!bg-primary-100/60 dark:!bg-primary-
 
 export const toolbarIconClass = cn(
   "inline-block bg-contain",
-  "mt-[2px] size-[18px] fill-default-500 dark:fill-default-400 align-[-0.25em]",
+  "mt-[2px] size-[18px] fill-default-500 align-[-0.25em] dark:fill-default-400",
   "group-active:opacity-100 group-disabled:opacity-20",
 );
 

@@ -26,7 +26,7 @@ type BilibiliComponentProps = Readonly<{
 function BilibiliComponent({ className, format, nodeKey, videoID }: BilibiliComponentProps) {
   return (
     <BlockWithAlignableContents className={className} format={format} nodeKey={nodeKey}>
-      <div className="mx-4 my-8 h-[180px] max-h-[450px] min-h-[90px] w-[320px] min-w-[160px] max-w-[800px] resize overflow-scroll">
+      <div className="mx-4 my-8 h-[180px] max-h-[450px] min-h-[90px] w-[320px] min-w-[160px] max-w-[800px] resize overflow-scroll scrollbar-hide">
         <iframe
           width="100%"
           height="100%"

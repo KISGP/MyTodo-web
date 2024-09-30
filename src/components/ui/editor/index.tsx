@@ -31,7 +31,7 @@ import { memo } from "react";
 function Placeholder() {
   return (
     <div className="pointer-events-none absolute left-3 top-2 select-none text-default-500/60">
-      <p>输入待办详情~</p>
+      <p>添加描述~</p>
     </div>
   );
 }
@@ -55,29 +55,40 @@ const MATCHERS = [
   },
 ];
 
-const LexicalEditor = memo(() => {
-  const initialConfig: InitialConfigType = {
-    namespace: "LexicalEditor",
-    theme,
-    onError(error: Error) {
-      throw error;
-    },
-    nodes: [HeadingNode, QuoteNode, CodeNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, BilibiliNode],
-  };
+const initialConfig: InitialConfigType = {
+  namespace: "LexicalEditor",
+  theme,
+  onError(error: Error) {
+    throw error;
+  },
+  nodes: [HeadingNode, QuoteNode, CodeNode, ListNode, ListItemNode, LinkNode, AutoLinkNode, BilibiliNode],
+};
 
-  return (
+const LexicalEditor = memo(
+  ({
+    toolbar,
+    action,
+    classNames,
+  }: {
+    toolbar?: boolean;
+    action?: boolean;
+    classNames?: { contentEditable?: string; base?: string };
+  }) => (
     <LexicalComposer initialConfig={initialConfig}>
-      <ToolbarPlugin />
-      <Divider />
-      <ActionPlugin />
-      <div className="relative py-2 pl-3">
+      {toolbar && (
+        <>
+          <ToolbarPlugin />
+          <Divider />
+        </>
+      )}
+      {action && <ActionPlugin />}
+      <div className={cn("relative py-2 pl-3", classNames?.base)}>
         <RichTextPlugin
           contentEditable={
             <ContentEditable
               className={cn(
-                "scrollbar relative resize-none overflow-y-auto outline-none",
-                "h-[calc(100vh_-_259px)] max-w-full",
-                "caret-default-800",
+                "scrollbar relative max-w-full resize-none overflow-y-auto caret-default-800 outline-none",
+                classNames?.contentEditable,
               )}
               aria-placeholder="添加描述"
               placeholder={<Placeholder />}
@@ -97,7 +108,7 @@ const LexicalEditor = memo(() => {
         <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       </div>
     </LexicalComposer>
-  );
-});
+  ),
+);
 
 export default LexicalEditor;

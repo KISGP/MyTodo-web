@@ -8,7 +8,7 @@ import { toolbarIconClass, toolbarButtonClass } from "../theme";
 export default function ActionPlugin() {
   const [editor] = useLexicalComposerContext();
   return (
-    <div className="absolute bottom-3 right-3 z-50 flex gap-1">
+    <div className="absolute bottom-1 right-1 z-50 flex gap-1">
       <button onClick={() => importFile(editor)} className={toolbarButtonClass} aria-label="Import" title="Import">
         <UploadIcon className={toolbarIconClass} />
       </button>

@@ -1,29 +1,15 @@
 import ReactDOM from "react-dom";
-import List, { type ListRowProps } from "react-virtualized/dist/commonjs/List";
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
+import List, { type ListRowProps } from "react-virtualized/dist/commonjs/List";
 import { CSSProperties, memo, useCallback, useState } from "react";
+import { Checkbox, Button, cn, Tooltip } from "@nextui-org/react";
 import { DragDropContext, Droppable, Draggable, type DraggableProvided } from "@hello-pangea/dnd";
-import {
-  Checkbox,
-  Button,
-  cn,
-  Tooltip,
-  Dropdown,
-  DropdownTrigger,
-  DropdownItem,
-  DropdownMenu,
-  Selection,
-} from "@nextui-org/react";
 
+import useToast from "@/hooks/useToast";
 import Trash from "@/assets/svg/trash.svg?react";
 import AddIcon from "@/assets/svg/add.svg?react";
-import SelectAllIcon from "@/assets/svg/select-all.svg?react";
-import SelectNoIcon from "@/assets/svg/select-no.svg?react";
-import FilterIcon from "@/assets/svg/filter.svg?react";
+import { Tag, TagFilter } from "./tag";
 import { useStore, type TodoItemType } from "@/store";
-import useToast from "@/hooks/useToast";
-import Tag, { TagIcon } from "./tag";
-
 import { DataSlice } from "@/store";
 
 const ListItem = memo<{
@@ -89,11 +75,8 @@ export default memo(() => {
 
   // 根据标签筛选 todo
   const [list, tags] = useStore((state) => [state.todos, state.tags]);
-  const [selectedTags, setSelectedTags] = useState<Selection>(new Set([]));
-  const activeList = list.filter((item) => {
-    const tag = Array.from(selectedTags)[0];
-    return tag ? item.tagsId.includes(tag as string) : true;
-  });
+  const [selectedTag, setSelectedTag] = useState<string>();
+  const activeList = list.filter((item) => (selectedTag ? item.tagsId.includes(selectedTag) : true));
 
   const rowRenderer = useCallback(
     (todoList: TodoItemType[]) =>
@@ -127,46 +110,23 @@ export default memo(() => {
     <div className="size-full rounded-xl border border-default-200 py-2 transition-colors dark:border-default-100">
       <div className="mb-1 flex h-10 w-full items-center justify-between px-2">
         <div className="flex items-center gap-2">
-          <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
+          <div>
+            <Checkbox onValueChange={(value) => toggle_AllTodoSelected(value)} />
+            <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
+          </div>
           {tags
-            .filter((tag) => tag.id === Array.from(selectedTags)[0])
+            .filter((tag) => tag.id === selectedTag)
             .map((tag) => (
               <Tag tag={tag} classNames={{ icon: "size-3" }} />
             ))}
         </div>
         <div className="flex gap-1">
-          <Dropdown classNames={{ content: "min-w-fit" }}>
-            <DropdownTrigger>
-              <Button isIconOnly size="sm" variant="light">
-                <FilterIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              variant="flat"
-              selectionMode="single"
-              selectedKeys={selectedTags}
-              onSelectionChange={(keys) => {
-                toggle_AllTodoSelected(false);
-                setSelectedTags(keys);
-              }}
-            >
-              {tags.map((tag) => (
-                <DropdownItem key={tag.id} title={tag.title} startContent={<TagIcon color={tag.color} />} />
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-
-          <Tooltip content="取消全选">
-            <Button isIconOnly size="sm" variant="light" onPress={() => toggle_AllTodoSelected(false)}>
-              <SelectNoIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />
-            </Button>
-          </Tooltip>
-
-          <Tooltip content="全选">
-            <Button isIconOnly size="sm" variant="light" onPress={() => toggle_AllTodoSelected(true)}>
-              <SelectAllIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />
-            </Button>
-          </Tooltip>
+          <TagFilter
+            onAction={(key) => {
+              toggle_AllTodoSelected(false);
+              setSelectedTag(key);
+            }}
+          />
 
           <Tooltip content="新建清单">
             <Button

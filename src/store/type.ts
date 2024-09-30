@@ -35,6 +35,11 @@ export type DataSlice = {
    * */
   tags: TagType[];
 
+  /**
+   * @description 存放临时 todo 的数据，方便修改以及保存
+   * */
+  tempTodo: TempTodoType;
+
   // ================== 数据只能由下面方法修改 ==================
 
   /**
@@ -86,12 +91,13 @@ export type DataSlice = {
    * */
   delete_tag: (id: string, deleteTodo: boolean) => void;
 
-  // ================== 仅用于 /todo 页面 ==================
-
-  tempTodo: TempTodoType;
+  /**
+   * @description 重置显示内容
+   * */
+  reset_tempTodo: () => void;
 
   /**
-   * @description 将 todos 更新为 fn 的返回值
+   * @description 更新为 tempTodo
    * */
   update_tempTodo: (value: Partial<TempTodoType>) => void;
 
@@ -104,6 +110,8 @@ export type DataSlice = {
    * @description 保存当前 tempTodo
    * */
   save_tempTodo: () => Promise<{ status: boolean; msg: string }>;
+
+  // ================== 仅用于 /todo 页面 ==================
 
   /**
    * @description 创建一个临时 todo（保存当前 tempTodo, 并重置显示内容）
@@ -119,11 +127,6 @@ export type DataSlice = {
    * @description 删除选中的 todo
    * */
   delete_selectedTodo: () => Promise<{ status: boolean; msg: string }>;
-
-  /**
-   * @description 重置显示内容
-   * */
-  reset_tempTodo: () => void;
 
   // ================== 仅用于 /board 页面 ==================
 

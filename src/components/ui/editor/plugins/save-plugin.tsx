@@ -16,7 +16,8 @@ export default function SavePlugin(): JSX.Element | null {
     const autoSave = throttle(() => {
       update_tempTodo({ content: JSON.stringify(editor.getEditorState().toJSON()) });
       // TODO: 添加用户自定义多少秒保存一次
-    }, 1000);
+      // FIXME: 找到一个合适的时间间隔
+    }, 200);
 
     editor.registerUpdateListener(autoSave);
   }, []);

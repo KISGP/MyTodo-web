@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { DatePicker, Listbox, Popover, PopoverTrigger, PopoverContent, Button, ListboxItem } from "@nextui-org/react";
+import { DatePicker } from "@nextui-org/react";
 import { parseDate } from "@internationalized/date";
 import { useShallow } from "zustand/react/shallow";
 import { useStore } from "@/store";
@@ -7,17 +7,16 @@ import { formatDateString } from "@/lib/utils";
 
 import LexicalEditor from "./editor";
 import useToast from "@/hooks/useToast";
-import ChevronDownIcon from "@/assets/svg/chevron-down.svg?react";
-import Tag, { TagIcon } from "./tag";
+import { TagSelector } from "./tag";
 
 const TodoEditor = memo(() => {
-  const [time, selectedTagsId, save_tempTodo, update_tempTodo] = useStore((state) => [
+  const [time, save_tempTodo, update_tempTodo] = useStore((state) => [
     state.tempTodo.time,
-    state.tempTodo.tagsId,
     state.save_tempTodo,
     state.update_tempTodo,
   ]);
-  const [title, tags] = useStore(useShallow((state) => [state.tempTodo.title, state.tags]));
+
+  const [title, tagsId] = useStore(useShallow((state) => [state.tempTodo.title, state.tempTodo.tagsId]));
 
   const myToast = useToast();
 
@@ -45,39 +44,17 @@ const TodoEditor = memo(() => {
         />
       </div>
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
-        <LexicalEditor />
+        <LexicalEditor toolbar action classNames={{ contentEditable: "h-[calc(100vh_-_259px)]" }} />
         <div className="flex items-center gap-2 px-2">
-          {selectedTagsId.map((id) => (
-            <Tag tag={tags.find((item) => item.id === id)!} classNames={{ icon: "size-3" }} />
-          ))}
-          <Popover placement="top-start">
-            <PopoverTrigger>
-              <Button isIconOnly radius="full" size="sm" className="bg-default-100">
-                <ChevronDownIcon className="size-4 fill-default-400 rotate-180" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-1">
-              <Listbox
-                variant="flat"
-                aria-label="Listbox"
-                selectionMode="single"
-                selectedKeys={selectedTagsId}
-                onSelectionChange={(keys: any) => update_tempTodo({ tagsId: Array.from(keys) })}
-              >
-                {tags
-                  .filter((item) => item.id !== "NoTag")
-                  .map((tag) => (
-                    <ListboxItem
-                      key={tag.id}
-                      title={tag.title}
-                      description={tag.description}
-                      startContent={<TagIcon color={tag.color} />}
-                      classNames={{ description: "text-xs !text-default-400" }}
-                    />
-                  ))}
-              </Listbox>
-            </PopoverContent>
-          </Popover>
+          <TagSelector
+            showDescription
+            placement="top-start"
+            tagId={tagsId[0]}
+            onAction={(key) => {
+              update_tempTodo({ tagsId: [key] });
+              save_tempTodo();
+            }}
+          />
         </div>
       </div>
     </div>
