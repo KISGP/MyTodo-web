@@ -1,15 +1,171 @@
-import { memo } from "react";
-import { Calendar } from "@nextui-org/react";
-import { I18nProvider } from "@react-aria/i18n";
+import lunisolar from "lunisolar";
+import { formatDateString } from "@/lib/utils";
+import { cn, Divider } from "@nextui-org/react";
+import { memo, useState } from "react";
+import { useStore, TodoItemType, TagType } from "@/store";
 
-const calendar = memo(() => {
+type DateItem = {
+  date: Date;
+  lunarDate: string;
+  formateDate: string;
+  isLastOrNextMonth?: boolean;
+  isCurrentDay?: boolean;
+  solarTerm?: string;
+  todos?: TodoItemType[];
+};
+
+const generateMonthCalendar: (date: Date) => Omit<DateItem, "todo">[] = (date) => {
+  const dates: DateItem[] = [];
+
+  // 设输入的date为当前日期
+
+  // 获取当前年份
+  const currentYear = date.getFullYear();
+  // 获取当前月份的天数
+  const currentMonth = date.getMonth();
+  const currentMonthDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+  // 获取当前月份的第一天是星期几
+  const currentMonthStartDay = new Date(currentYear, currentMonth, 1).getDay() || 7;
+  // 获取上个月的天数
+  const lastMonth = new Date(currentYear, currentMonth, 0);
+  const lastMonthDays = lastMonth.getDate();
+
+  const format = (t: Date) => formatDateString(t.getFullYear(), t.getMonth() + 1, t.getDate());
+
+  // 填充上个月份的日期
+  // 如果每周第一天不是周一，改为 lastMonthDays - currentMonthStartDay + 1
+  for (let i = lastMonthDays - currentMonthStartDay + 2; i <= lastMonthDays; i++) {
+    const date = new Date(currentYear, currentMonth - 1, i);
+    const lunarDate = lunisolar(date);
+    dates.push({
+      date,
+      lunarDate: lunarDate.format("lMlD"),
+      formateDate: format(date),
+      isLastOrNextMonth: true,
+      solarTerm: lunarDate.solarTerm?.toString(),
+    });
+  }
+
+  // 填充当前月份的日期
+  for (let i = 1; i <= currentMonthDays; i++) {
+    const date = new Date(currentYear, currentMonth, i);
+    const lunarDate = lunisolar(date);
+    dates.push({
+      date,
+      lunarDate: lunarDate.format("lMlD"),
+      formateDate: format(date),
+      solarTerm: lunarDate.solarTerm?.toString(),
+    });
+  }
+
+  // 获取需要填充的下个月的天数
+  const nextMonthDays = 42 - dates.length;
+  for (let i = 1; i <= nextMonthDays; i++) {
+    const date = new Date(currentYear, currentMonth + 1, i);
+    const lunarDate = lunisolar(date);
+    dates.push({
+      date,
+      lunarDate: lunarDate.format("lMlD"),
+      formateDate: format(date),
+      isLastOrNextMonth: true,
+      solarTerm: lunarDate.solarTerm?.toString(),
+    });
+  }
+
+  // 标记当前日期
+  const currentDay = new Date();
+  const currentDayStr = format(currentDay);
+  return dates.map((item) => (item.formateDate === currentDayStr ? { ...item, isCurrentDay: true } : item));
+};
+
+const DayCard = memo<{ day: DateItem; tags: TagType[] }>(({ day, tags }) => {
   return (
-    <div>
-      <I18nProvider locale="zh-CN-u-ca-chinese">
-        <Calendar aria-label="Date (International Calendar)" showMonthAndYearPickers />
-      </I18nProvider>
+    <div className="group size-full p-1">
+      <div
+        className={cn(
+          "flex items-center justify-between text-lg font-semibold",
+          day.isLastOrNextMonth && "brightness-50",
+        )}
+      >
+        {day.isLastOrNextMonth ? (
+          <div className={day.isCurrentDay ? "rounded-lg bg-primary-400/90 px-2 dark:bg-primary-400" : ""}>
+            {day.date.getMonth() + 1}月{day.date.getDate()}号
+          </div>
+        ) : (
+          <div className={cn("size-8 rounded-full", day.isCurrentDay && "bg-primary-400/90 dark:bg-primary-400")}>
+            <p className="size-8 text-center leading-[32px]">
+              {day.isLastOrNextMonth ? `${day.date.getMonth() + 1}月${day.date.getDate()}号` : day.date.getDate()}
+            </p>
+          </div>
+        )}
+        <div className="flex flex-col items-center font-thin text-default-500/80">
+          <span className="text-sm">{day.lunarDate}</span>
+          {day.solarTerm && <span className="text-xs text-primary-400 dark:text-primary-300">{day.solarTerm}</span>}
+        </div>
+      </div>
+      {
+        <div className="scrollbar-hidden hover:scrollbar max-h-20 overflow-y-auto">
+          {day.todos?.map((todo) => {
+            return (
+              <div
+                key={todo.id}
+                className={cn(
+                  "my-1 w-full truncate rounded-lg px-2 py-1 text-sm",
+                  tags.find((tag) => tag.id === todo.tagsId[0])?.color || "bg-content3/50",
+                )}
+              >
+                <span>{todo.title}</span>
+              </div>
+            );
+          })}
+        </div>
+      }
     </div>
   );
 });
 
-export default calendar;
+const Calendar = () => {
+  const [todos, tags] = useStore((state) => [state.todos, state.tags]);
+
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
+  let dates = generateMonthCalendar(currentDate);
+
+  dates = dates.map((item) => {
+    return {
+      ...item,
+      todos: todos.filter((todo) => todo.time === item.formateDate),
+    } as DateItem;
+  });
+
+  return (
+    <div className="scrollbar flex size-full flex-col overflow-y-auto p-2">
+      <div className="flex h-12 w-full">
+        <h2 className="text-xl">{currentDate.toLocaleDateString("default", { month: "long", year: "numeric" })}</h2>
+      </div>
+      <div className="grid grid-cols-7 gap-2">
+        {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((item, index) => (
+          <div key={index} className="max-h-fit py-1 text-center text-lg text-default-400">
+            {item}
+          </div>
+        ))}
+      </div>
+      <Divider className="mb-2" />
+      <div className="grid flex-grow grid-cols-7 grid-rows-6 gap-2">
+        {dates.map((date) => (
+          <div key={date.formateDate} className="relative overflow-hidden rounded-lg bg-content2/50 transition-colors">
+            <DayCard day={date} tags={tags} />
+            {date.isLastOrNextMonth && (
+              <div
+                className="absolute bottom-0 left-0 right-0 top-0 size-full cursor-pointer rounded-lg backdrop-brightness-75 backdrop-opacity-30 dark:backdrop-opacity-60"
+                onClick={() => setCurrentDate(date.date)}
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Calendar;

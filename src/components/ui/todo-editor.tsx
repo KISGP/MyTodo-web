@@ -10,7 +10,8 @@ import useToast from "@/hooks/useToast";
 import { TagSelector } from "./tag";
 
 const TodoEditor = memo(() => {
-  const [time, save_tempTodo, update_tempTodo] = useStore((state) => [
+  const [id, time, save_tempTodo, update_tempTodo] = useStore((state) => [
+    state.tempTodo.id,
     state.tempTodo.time,
     state.save_tempTodo,
     state.update_tempTodo,
@@ -52,7 +53,7 @@ const TodoEditor = memo(() => {
             tagId={tagsId[0]}
             onAction={(key) => {
               update_tempTodo({ tagsId: [key] });
-              save_tempTodo();
+              id && save_tempTodo();
             }}
           />
         </div>
