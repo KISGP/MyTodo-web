@@ -148,7 +148,7 @@ const TagItem = memo<{ tag: TagType }>(({ tag }) => {
 });
 
 const SettingsBoard = memo(() => {
-  const [tags, add_tag, notificationLevel] = useStore((state) => [state.tags, state.add_tag, state.notificationLevel]);
+  const [tags, add_tag, notificationScope] = useStore((state) => [state.tags, state.add_tag, state.notificationScope]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -156,7 +156,7 @@ const SettingsBoard = memo(() => {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
 
-  const myToast = useToast(notificationLevel);
+  const myToast = useToast(notificationScope);
 
   return (
     <div className="scrollbar h-[calc(100vh_-_135px)] overflow-y-auto px-4 pb-20 pt-10">
@@ -233,12 +233,12 @@ const SettingsBoard = memo(() => {
 });
 
 const settings = memo(() => {
-  const [notificationLevel, update_notificationLevel] = useStore((state) => [
-    state.notificationLevel,
-    state.update_notificationLevel,
+  const [notificationScope, update_notificationScope] = useStore((state) => [
+    state.notificationScope,
+    state.update_notificationScope,
   ]);
 
-  const [value, setValue] = useState<Selection>(new Set([notificationLevel.toString()]));
+  const [value, setValue] = useState<Selection>(new Set([notificationScope.toString()]));
 
   return (
     <div className="size-full p-4">
@@ -254,7 +254,7 @@ const settings = memo(() => {
                 const selection = Array.from(keys)[0];
                 if (selection) {
                   setValue(keys);
-                  update_notificationLevel(parseInt(selection.toString()));
+                  update_notificationScope(parseInt(selection.toString()));
                 }
               }}
             >

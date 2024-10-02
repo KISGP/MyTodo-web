@@ -13,8 +13,8 @@ import { useStore } from "./store";
 import "@/styles/index.css";
 
 const App = memo(() => {
-  const notificationLevel = useStore((state) => state.notificationLevel);
-  const myToast = useToast(notificationLevel);
+  const notificationScope = useStore((state) => state.notificationScope);
+  const myToast = useToast(notificationScope);
 
   useEffect(() => {
     isMobile && myToast("请在电脑端打开以获得最佳体验", { icon: "💻", messagePriority: 1 });

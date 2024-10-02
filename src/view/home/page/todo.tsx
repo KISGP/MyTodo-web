@@ -20,8 +20,8 @@ import Trash from "@/assets/svg/trash.svg?react";
 import AddIcon from "@/assets/svg/add.svg?react";
 
 const TodoEditor = memo(() => {
-  const [notificationLevel, id, time, save_tempTodo, update_tempTodo] = useStore((state) => [
-    state.notificationLevel,
+  const [notificationScope, id, time, save_tempTodo, update_tempTodo] = useStore((state) => [
+    state.notificationScope,
     state.tempTodo.id,
     state.tempTodo.time,
     state.save_tempTodo,
@@ -30,7 +30,7 @@ const TodoEditor = memo(() => {
 
   const [title, tagsId] = useStore(useShallow((state) => [state.tempTodo.title, state.tempTodo.tagsId]));
 
-  const myToast = useToast(notificationLevel);
+  const myToast = useToast(notificationScope);
 
   return (
     <div id="editorContainer" className="relative size-full">
@@ -43,7 +43,7 @@ const TodoEditor = memo(() => {
           className="h-3/4 flex-grow rounded-xl bg-transparent px-4 text-2xl font-semibold caret-default-500 outline-none placeholder:text-default-300"
           onChange={(e) => update_tempTodo({ title: e.target.value })}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            e.key === "Enter" && myToast.auto(save_tempTodo(), { messagePriority: 2 });
+            e.key === "Enter" && myToast.auto(save_tempTodo());
           }}
         />
         <DatePicker
@@ -67,7 +67,7 @@ const TodoEditor = memo(() => {
               id &&
                 save_tempTodo().then(({ status }) => {
                   if (status) {
-                    myToast.success("更新标签成功", { messagePriority: 1 });
+                    myToast.success("更新标签成功", { messagePriority: 2 });
                   } else {
                     myToast.error("更新标签失败", { messagePriority: 1 });
                   }
@@ -130,7 +130,7 @@ const ListItem = memo<{
 
 const TodoList = memo(() => {
   const [
-    notificationLevel,
+    notificationScope,
     reorder_todos,
     delete_selectedTodo,
     create_tempTodo,
@@ -138,7 +138,7 @@ const TodoList = memo(() => {
     update_todo,
     toggle_AllTodoSelected,
   ] = useStore((state) => [
-    state.notificationLevel,
+    state.notificationScope,
     state.reorder_todos,
     state.delete_selectedTodo,
     state.create_tempTodo,
@@ -147,7 +147,7 @@ const TodoList = memo(() => {
     state.toggle_AllTodoSelected,
   ]);
 
-  const myToast = useToast(notificationLevel);
+  const myToast = useToast(notificationScope);
 
   // 根据标签筛选 todo
   const [list, tags] = useStore((state) => [state.todos, state.tags]);
@@ -210,7 +210,7 @@ const TodoList = memo(() => {
               size="sm"
               variant="light"
               onPress={() => {
-                myToast.auto(create_tempTodo(), { messagePriority: 2 });
+                myToast.auto(create_tempTodo());
 
                 document.getElementById("todo-title-input")?.focus();
               }}
@@ -220,12 +220,7 @@ const TodoList = memo(() => {
           </Tooltip>
 
           <Tooltip content="删除选中清单">
-            <Button
-              isIconOnly
-              size="sm"
-              variant="light"
-              onPress={() => myToast.auto(delete_selectedTodo(), { messagePriority: 1 })}
-            >
+            <Button isIconOnly size="sm" variant="light" onPress={() => myToast.auto(delete_selectedTodo())}>
               <Trash className="size-4 fill-default-800/80 dark:fill-default-400/80" />
             </Button>
           </Tooltip>

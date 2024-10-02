@@ -57,9 +57,9 @@ export default function ToolbarPlugin() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const [save_tempTodo, notificationLevel] = useStore((state) => [state.save_tempTodo, state.notificationLevel]);
+  const [save_tempTodo, notificationScope] = useStore((state) => [state.save_tempTodo, state.notificationScope]);
 
-  const myToast = useToast(notificationLevel);
+  const myToast = useToast(notificationScope);
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
