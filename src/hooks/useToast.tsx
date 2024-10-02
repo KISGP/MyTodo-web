@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import toast, { ToastOptions } from "react-hot-toast";
 import { useTheme } from "next-themes";
 
-const useToast = () => {
+const useToast = (notificationLevel: number) => {
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
 
@@ -12,33 +12,56 @@ const useToast = () => {
     color: isDarkMode ? "#fff" : "#333",
   };
 
-  const myToast = (message: string, options?: ToastOptions) => {
-    toast(message, { style, ...options });
+  /**
+   * 消息优先级（默认消息优先级是 1）
+   * 1: 通常是错误消息以及一些重要的消息
+   * 2: 一些不重要的成功类型的消息
+   * */
+
+  const isNotify = (messagePriority?: number) =>
+    (messagePriority && messagePriority <= notificationLevel) || (!messagePriority && 2 <= notificationLevel);
+
+  const myToast = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+    if (isNotify(options?.messagePriority)) {
+      toast(message, { style, ...options });
+    }
   };
 
-  myToast.error = (message: string, options?: ToastOptions) => {
-    toast.error(message, { style, ...options });
+  myToast.error = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+    if (isNotify(options?.messagePriority)) {
+      toast.error(message, { style, ...options });
+    }
   };
 
-  myToast.warning = (message: string, options?: ToastOptions) => {
-    toast.error(message, { style, icon: "⚠️", ...options });
+  myToast.warning = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+    if (isNotify(options?.messagePriority)) {
+      toast.error(message, { style, icon: "⚠️", ...options });
+    }
   };
 
-  myToast.success = (message: string, options?: ToastOptions) => {
-    toast.success(message, { style, ...options });
+  myToast.success = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+    if (isNotify(options?.messagePriority)) {
+      toast.success(message, { style, ...options });
+    }
   };
 
-  myToast.auto = (promise: Promise<{ status: boolean; msg: string }>, options?: ToastOptions) => {
+  myToast.auto = (
+    promise: Promise<{ status: boolean; msg: string }>,
+    options?: ToastOptions & { messagePriority?: number },
+  ) => {
     promise.then((res) => {
-      if (res.status) {
-        myToast.success(res.msg, options);
-      } else {
-        myToast.error(res.msg, options);
+      console.log(options?.messagePriority, notificationLevel);
+      if (isNotify(options?.messagePriority)) {
+        if (res.status) {
+          myToast.success(res.msg, options);
+        } else {
+          myToast.error(res.msg, options);
+        }
       }
     });
   };
 
-  return useCallback(myToast, [isDarkMode]);
+  return useCallback(myToast, [isDarkMode, notificationLevel]);
 };
 
 export default useToast;

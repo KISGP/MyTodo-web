@@ -40,6 +40,11 @@ export type DataSlice = {
    * */
   tempTodo: TempTodoType;
 
+  /**
+   * @description 通知等级，可以通知消息优先级小于通知等级的消息。0:不通知; 1:仅通知错误; 2:通知成功和错误
+   * */
+  notificationLevel: number;
+
   // ================== 数据只能由下面方法修改 ==================
 
   /**
@@ -110,6 +115,11 @@ export type DataSlice = {
    * @description 保存当前 tempTodo
    * */
   save_tempTodo: () => Promise<{ status: boolean; msg: string }>;
+
+  /**
+   * @description 更新 notificationLevel
+   * */
+  update_notificationLevel: (value: number) => void;
 
   // ================== 仅用于 /todo 页面 ==================
 

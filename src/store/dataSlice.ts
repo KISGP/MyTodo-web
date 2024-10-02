@@ -50,6 +50,8 @@ export const createDataSlice: DataStateType = (set, get) => ({
 
   tempTodo: defaultTodo,
 
+  notificationLevel: 1,
+
   save_todo: async (value) => {
     // 为新的 todo 添加一些必要的属性
     const { id, uid, content, ...other } = {
@@ -242,6 +244,10 @@ export const createDataSlice: DataStateType = (set, get) => ({
 
     // 修改当前选中
     get().update_todos((todos) => todos.map((item) => ({ ...item, isSelected: item.id === id })));
+  },
+
+  update_notificationLevel: (value) => {
+    set({ notificationLevel: value });
   },
 
   // ================== 仅用于 /todo 页面 ==================

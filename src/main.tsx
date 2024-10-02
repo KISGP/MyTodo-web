@@ -8,14 +8,16 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 import useToast from "@/hooks/useToast";
 import routes, { RouterGuard } from "@/routes";
+import { useStore } from "./store";
 
 import "@/styles/index.css";
 
 const App = memo(() => {
-  const myToast = useToast();
+  const notificationLevel = useStore((state) => state.notificationLevel);
+  const myToast = useToast(notificationLevel);
 
   useEffect(() => {
-    isMobile && myToast("请在电脑端打开以获得最佳体验", { icon: "💻" });
+    isMobile && myToast("请在电脑端打开以获得最佳体验", { icon: "💻", messagePriority: 1 });
   }, []);
 
   return (

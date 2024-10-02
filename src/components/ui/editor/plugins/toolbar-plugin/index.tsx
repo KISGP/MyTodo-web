@@ -57,9 +57,9 @@ export default function ToolbarPlugin() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const save_tempTodo = useStore((state) => state.save_tempTodo);
+  const [save_tempTodo, notificationLevel] = useStore((state) => [state.save_tempTodo, state.notificationLevel]);
 
-  const myToast = useToast();
+  const myToast = useToast(notificationLevel);
 
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -229,7 +229,7 @@ export default function ToolbarPlugin() {
             editor.focus();
           }}
         />
-        <SaveButton onClick={() => myToast.auto(save_tempTodo())} />
+        <SaveButton onClick={() => myToast.auto(save_tempTodo(), { messagePriority: 1 })} />
       </div>
     </div>
   );
