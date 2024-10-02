@@ -229,7 +229,7 @@ export default function ToolbarPlugin() {
             editor.focus();
           }}
         />
-        <SaveButton onClick={() => myToast.auto(save_tempTodo(), { messagePriority: 1 })} />
+        <SaveButton onClick={() => myToast.auto(save_tempTodo())} />
       </div>
     </div>
   );
