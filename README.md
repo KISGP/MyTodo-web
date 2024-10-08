@@ -4,7 +4,7 @@
 
 页面设计来源于[新版QQ邮箱](https://mdnice.com/writing/a045df0e670e426aa8957858cf27f49b)和[滴答清单](https://dida365.com/)。
 
-项目预览: [https://project.kisssssssss.space/todo](https://project.kisssssssss.space/todo)
+项目预览: https://project.kisgp.cn/todo
 
 # 使用到的技术
 
