@@ -2,7 +2,7 @@ import ReactDOM from "react-dom";
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import List, { type ListRowProps } from "react-virtualized/dist/commonjs/List";
 import { memo, useEffect, useState, CSSProperties, useCallback } from "react";
-import { Checkbox, Button, cn, Tooltip } from "@nextui-org/react";
+import { Checkbox, Button, cn, Tooltip, Divider } from "@nextui-org/react";
 import { DatePicker } from "@nextui-org/react";
 import { parseDate } from "@internationalized/date";
 import { useShallow } from "zustand/react/shallow";
@@ -18,6 +18,7 @@ import { TagSelector, Tag, TagFilter } from "@/components/ui/tag.tsx";
 import DragIcon from "@/assets/svg/drag.svg?react";
 import Trash from "@/assets/svg/trash.svg?react";
 import AddIcon from "@/assets/svg/add.svg?react";
+import CompleteIcon from "@/assets/svg/complete.svg?react";
 
 const TodoEditor = memo(() => {
   const [notificationScope, id, time, save_tempTodo, update_tempTodo] = useStore((state) => [
@@ -112,12 +113,15 @@ const ListItem = memo<{
             isSelected={item.isSelected}
             onValueChange={(value) => update_todo!(item.id, { isSelected: value })}
           />
-          <span
+          <p
             onClick={() => change_tempTodo(item.id)}
             className="w-full cursor-default select-none truncate text-lg text-default-500"
           >
-            {item.title}
-          </span>
+            <span className="relative px-2">
+              {item.isCompleted ? <i className="text-base">{item.title}</i> : item.title}
+              <Divider className={cn("absolute top-1/2 bg-default-500", !item.isCompleted && "invisible")} />
+            </span>
+          </p>
         </div>
 
         <div className="min-w-fit select-none text-base text-default-400">
@@ -137,6 +141,7 @@ const TodoList = memo(() => {
     change_tempTodo,
     update_todo,
     toggle_AllTodoSelected,
+    toggle_todoCompleted,
   ] = useStore((state) => [
     state.notificationScope,
     state.reorder_todos,
@@ -145,6 +150,7 @@ const TodoList = memo(() => {
     state.change_tempTodo,
     state.update_todo,
     state.toggle_AllTodoSelected,
+    state.toggle_todoCompleted,
   ]);
 
   const myToast = useToast(notificationScope);
@@ -203,6 +209,12 @@ const TodoList = memo(() => {
               setSelectedTag(key);
             }}
           />
+
+          <Tooltip content="完成/未完成">
+            <Button isIconOnly size="sm" variant="light" onPress={toggle_todoCompleted}>
+              <CompleteIcon className="size-5 fill-default-800/80 dark:fill-default-400/80" />
+            </Button>
+          </Tooltip>
 
           <Tooltip content="新建清单">
             <Button

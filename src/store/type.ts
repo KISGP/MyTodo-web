@@ -9,6 +9,7 @@ export type TodoBaseType = {
   isCloudSynced: boolean;
   isSelected: boolean;
   uid: string;
+  isCompleted: boolean;
 };
 
 export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tagsId" | "id">;
@@ -137,6 +138,11 @@ export type DataSlice = {
    * @description 删除选中的 todo
    * */
   delete_selectedTodo: () => Promise<{ status: boolean; msg: string }>;
+
+  /**
+   * @description 将选中的 todo 的 isCompleted 状态取反
+   * */ 
+  toggle_todoCompleted: () => void;
 
   // ================== 仅用于 /board 页面 ==================
 

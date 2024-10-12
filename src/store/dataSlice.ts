@@ -60,6 +60,7 @@ export const createDataSlice: DataStateType = (set, get) => ({
       isCloudSynced: false,
       isSelected: true,
       uid: get().user.uid,
+      isCompleted: false,
     };
 
     // 保存到 indexedDB
@@ -286,6 +287,14 @@ export const createDataSlice: DataStateType = (set, get) => ({
     const status = await delete_todo(selectedIds);
 
     return { status, msg: status ? "删除成功" : "删除失败" };
+  },
+
+  toggle_todoCompleted: () => {
+    get().update_todos((todos) =>
+      todos.map((item) => {
+        return item.isSelected ? { ...item, isCompleted: !item.isCompleted } : item;
+      }),
+    );
   },
 
   // ================== 仅用于 /board 页面 ==================
