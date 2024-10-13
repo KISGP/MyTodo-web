@@ -124,7 +124,7 @@ const DayCard = memo<{ day: DateItem; tags: TagType[] }>(({ day, tags }) => {
   );
 });
 
-const Calendar = () => {
+const Calendar = memo(() => {
   const [todos, tags] = useStore((state) => [state.todos, state.tags]);
 
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -166,6 +166,6 @@ const Calendar = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Calendar;

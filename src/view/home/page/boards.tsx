@@ -255,7 +255,7 @@ const Column = memo<{
   );
 });
 
-export default function Board() {
+const Board = memo(() => {
   const [tags, todos, update_todo, reorder_tags, reorder_todos] = useStore((state) => [
     state.tags,
     state.todos,
@@ -331,4 +331,6 @@ export default function Board() {
       <EditorModal isOpen={isOpen} onOpenChange={onOpenChange} />
     </EditModalContext.Provider>
   );
-}
+});
+
+export default Board;
