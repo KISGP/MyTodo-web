@@ -37,3 +37,36 @@ export function formatDateString(year: number, month: number, day: number): stri
 export function generateLocalID() {
   return new Date().getTime().toString(36) + Math.random().toString(36).slice(2, 9);
 }
+
+// TODO: 完善文件输入功能
+export function readFile(accept: string = ""): Promise<File | null> {
+  const inputEl = document.createElement("input");
+  inputEl.type = "file";
+  inputEl.accept = accept;
+  inputEl.multiple = false;
+
+  return new Promise((resolve, reject) => {
+    const onChange = () => {
+      if (inputEl.files) {
+        resolve(inputEl.files[0]);
+        cleanup();
+      }
+    };
+
+    const onWindowClick = () => {
+      if (!inputEl.value) {
+        reject(new Error("用户取消选择"));
+      }
+      cleanup();
+    };
+
+    const cleanup = () => {
+      inputEl.removeEventListener("change", onChange);
+      window.removeEventListener("click", onWindowClick, true);
+    };
+
+    inputEl.addEventListener("change", onChange);
+    setTimeout(() => window.addEventListener("click", onWindowClick, true), 100);
+    inputEl.click();
+  });
+}

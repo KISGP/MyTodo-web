@@ -2,7 +2,8 @@ import { memo } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@nextui-org/react";
 
-import Theme from "@/assets/svg/theme.svg?react";
+import Lunar from "@/assets/svg/lunar.svg?react";
+import Sun from "@/assets/svg/sun.svg?react";
 
 const ThemeButton = memo(() => {
   const { theme, setTheme } = useTheme();
@@ -14,8 +15,8 @@ const ThemeButton = memo(() => {
     }
   };
   return (
-    <Button isIconOnly size="sm" radius="full" onClick={changeTheme}>
-      <Theme className="h-6 w-6" />
+    <Button isIconOnly size="sm" radius="full" variant="light" onClick={changeTheme}>
+      {theme == "light" ? <Lunar className="size-6 fill-default-500" /> : <Sun className="size-6 fill-default-500" />}
     </Button>
   );
 });

@@ -7,6 +7,7 @@ import { StyleProvider, StyleContext } from "@/context/StyleContext";
 import Avatar from "@/components/ui/avatar";
 import Search from "@/components/ui/search";
 import ThemeButton from "@/components/ui/theme-button";
+import UploadButton from "@/components/ui/upload-button";
 import Sidebar, { type MenuItemProps } from "@/components/ui/sidebar";
 import TodoIcon from "@/assets/svg/todo.svg?react";
 import Area4Icon from "@/assets/svg/area4.svg?react";
@@ -34,10 +35,11 @@ const Main = memo(() => {
     >
       <header className="flex h-[60px] min-h-[60px] items-center justify-between">
         <Search />
-        <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center">
+        <div className="mx-8 flex h-full min-w-min flex-row-reverse items-center gap-2">
           <Avatar />
           <Divider orientation="vertical" className="mx-4 h-[65%]" />
           <ThemeButton />
+          <UploadButton />
         </div>
       </header>
 

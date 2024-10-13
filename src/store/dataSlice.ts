@@ -1,6 +1,6 @@
 import IndexedDBHelper from "@/lib/indexedDB";
-import { generateLocalID } from "@/lib/utils";
-import { DataStateType } from "./type";
+import { generateLocalID, readFile } from "@/lib/utils";
+import { DataStateType, TagType, userType } from "./type";
 import { tags } from "@/constant";
 import { TodoBaseType } from "./type";
 
@@ -13,6 +13,7 @@ export const defaultTodo = {
   content:
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":null,"format":"","indent":0,"type":"root","version":1}}',
   tagsId: [],
+  priority: 3,
 };
 
 export const createDataSlice: DataStateType = (set, get) => ({
@@ -62,7 +63,6 @@ export const createDataSlice: DataStateType = (set, get) => ({
       isSelected: true,
       uid: get().user.uid,
       isCompleted: false,
-      priority: 3,
     } as TodoBaseType;
 
     // 保存到 indexedDB
@@ -237,6 +237,7 @@ export const createDataSlice: DataStateType = (set, get) => ({
         time: todo.time,
         content: todo.content,
         tagsId: todo.tagsId,
+        priority: todo.priority,
       },
     });
 
@@ -253,17 +254,95 @@ export const createDataSlice: DataStateType = (set, get) => ({
     set({ notificationScope: value });
   },
 
+  get_AllData: async () => {
+    const { todos, tags, get_todo, user } = get();
+
+    const todosData = [];
+    for (const item of todos) {
+      const content = await get_todo(item.id);
+      if (!content) continue;
+      todosData.push(content);
+    }
+
+    return {
+      todos: todosData,
+      tags,
+      user,
+    };
+  },
+
+  export: async () => {
+    const data = await get().get_AllData();
+
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.json";
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  },
+
+  import: async () => {
+    const file = await readFile(".json");
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      if (event.target?.result) {
+        const json = JSON.parse(event.target.result as string) as {
+          todos: TodoBaseType[];
+          tags: TagType[];
+          user: userType;
+        };
+
+        // FIXME 新的数据如何合并到原有数据中
+        set((state) => {
+          state.tags = json.tags;
+          state.todos = json.todos;
+          state.user = json.user;
+        });
+      }
+    };
+
+    reader.onerror = function (e) {
+      console.error("读取文件时出错:", e.target?.error);
+    };
+
+    reader.readAsText(file as File);
+  },
+
+  upload: async () => {
+    const data = await get().get_AllData();
+
+    const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+
+    // 创建一个 FormData 对象
+    const formData = new FormData();
+
+    // 将 Blob 对象添加到 FormData 对象中
+    formData.append("file", blob, "data.json");
+
+    // 上传文件
+
+    await fetch("https://httpbin.org/post", {
+      method: "POST",
+      body: formData,
+    });
+
+    // TODO: 判断上传结果
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(2000);
+    return Math.random() > 0.5 ? { status: true, msg: "上传成功" } : { status: false, msg: "上传失败" };
+  },
+
   // ================== 仅用于 /todo 页面 ==================
 
   create_tempTodo: async () => {
-    const { tempTodo, save_tempTodo, reset_tempTodo, toggle_AllTodoSelected } = get();
-
-    if (tempTodo.id) {
-      // 如果当前有未保存的 todo 则先保存
-      const { status, msg } = await save_tempTodo();
-
-      if (!status) return { status, msg };
-    }
+    const { reset_tempTodo, toggle_AllTodoSelected } = get();
 
     toggle_AllTodoSelected(false);
 

@@ -59,3 +59,35 @@ export const tags: {
     color: tagColors.gray,
   },
 };
+
+export const areaData: {
+  icon: string;
+  title: string;
+  id: string;
+  class: string;
+}[] = [
+  {
+    icon: "😦",
+    title: "重要不紧急",
+    id: "1",
+    class: "text-yellow-400",
+  },
+  {
+    icon: "🤯",
+    title: "重要且紧急",
+    id: "2",
+    class: "text-red-600",
+  },
+  {
+    icon: "😌",
+    title: "不重要不紧急",
+    id: "3",
+    class: "text-green-600",
+  },
+  {
+    icon: "🫤",
+    title: "不重要但紧急",
+    id: "4",
+    class: "text-blue-600",
+  },
+];

@@ -14,6 +14,7 @@ import LexicalEditor from "@/components/ui/editor";
 import { throttle, formatDateString } from "@/lib/utils";
 import { useStore, type TodoItemType, type DataSlice } from "@/store";
 import { TagSelector, Tag, TagFilter } from "@/components/ui/tag.tsx";
+import PrioritySelector from "@/components/ui/priority-selector";
 
 import DragIcon from "@/assets/svg/drag.svg?react";
 import Trash from "@/assets/svg/trash.svg?react";
@@ -59,6 +60,19 @@ const TodoEditor = memo(() => {
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
         <LexicalEditor toolbar action classNames={{ contentEditable: "h-[calc(100vh_-_259px)]" }} />
         <div className="flex items-center gap-2 px-2">
+          <PrioritySelector
+            onAction={(key) => {
+              update_tempTodo({ priority: key });
+              id &&
+                save_tempTodo().then(({ status }) => {
+                  if (status) {
+                    myToast.success("更新优先级成功", { messagePriority: 2 });
+                  } else {
+                    myToast.error("更新优先级失败", { messagePriority: 1 });
+                  }
+                });
+            }}
+          />
           <TagSelector
             showDescription
             placement="top-start"

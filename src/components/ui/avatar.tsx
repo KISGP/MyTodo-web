@@ -7,7 +7,7 @@ import { useStore } from "@/store";
 const Avatar = memo(() => {
   const navigate = useNavigate();
 
-  const [quit] = useStore((state) => [state.quit]);
+  const [quit, exportData,importData] = useStore((state) => [state.quit, state.export,state.import]);
 
   return (
     <Dropdown placement="bottom-start">
@@ -32,7 +32,20 @@ const Avatar = memo(() => {
         >
           设置
         </DropdownItem>
-        <DropdownItem key="help_and_feedback">帮助 & 反馈</DropdownItem>
+        <DropdownItem
+          key="help_and_feedback"
+          onClick={() => {
+            window.open("https://github.com/KISGP/MyTodo-web/issues", "_blank");
+          }}
+        >
+          帮助 & 反馈
+        </DropdownItem>
+        <DropdownItem key="export" onClick={exportData}>
+          导出数据
+        </DropdownItem>
+        <DropdownItem key="import" onClick={importData}>
+          导入数据
+        </DropdownItem>
         <DropdownItem
           key="logout"
           color="danger"

@@ -26,7 +26,7 @@ export type TodoBaseType = {
   priority: number;
 };
 
-export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tagsId" | "id">;
+export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tagsId" | "id" | "priority">;
 
 export type TodoItemType = Omit<TodoBaseType, "content">;
 
@@ -136,6 +136,26 @@ export type DataSlice = {
    * */
   update_notificationScope: (value: number) => void;
 
+  /**
+   * @description 获取所有数据
+   * */
+  get_AllData: () => Promise<{ todos: TodoBaseType[]; tags: TagType[]; user: userType }>;
+
+  /**
+   * @description 导出数据
+   * */
+  export: () => void;
+
+  /**
+   * @description 导入数据
+   * */
+  import: () => void;
+
+  /**
+   * @description 上传数据
+   * */
+  upload: () => Promise<{ status: boolean; msg: string }>;
+
   // ================== 仅用于 /todo 页面 ==================
 
   /**
@@ -171,16 +191,18 @@ export type DataSlice = {
   save_item: (value: Pick<TempTodoType, "tagsId" | "title">) => void;
 };
 
+export type userType = {
+  uid: string;
+  name: string;
+  token: string;
+  account: string;
+  isGuest?: boolean;
+};
+
 export type UserSlice = {
   isLogin: boolean;
 
-  user: {
-    uid: string;
-    name: string;
-    token: string;
-    account: string;
-    isGuest?: boolean;
-  };
+  user: userType;
 
   settings: Partial<{
     isCloudSyncEnabled: boolean;
