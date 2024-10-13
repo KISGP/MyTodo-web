@@ -9,6 +9,7 @@ const Boards = lazy(() => import("@/view/home/page/boards"));
 const Calendar = lazy(() => import("@/view/home/page/calendar"));
 const Settings = lazy(() => import("@/view/home/page/settings"));
 const Login = lazy(() => import("@/view/login"));
+const Area = lazy(() => import("@/view/home/page/area"));
 import NotFound from "@/view/NotFound.tsx";
 
 import { useStore } from "@/store";
@@ -61,6 +62,14 @@ const routes: RouteObject[] = [
         element: (
           <Loading>
             <Settings />
+          </Loading>
+        ),
+      },
+      {
+        path: "area",
+        element: (
+          <Loading>
+            <Area />
           </Loading>
         ),
       },

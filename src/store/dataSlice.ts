@@ -2,6 +2,7 @@ import IndexedDBHelper from "@/lib/indexedDB";
 import { generateLocalID } from "@/lib/utils";
 import { DataStateType } from "./type";
 import { tags } from "@/constant";
+import { TodoBaseType } from "./type";
 
 const DB = new IndexedDBHelper();
 
@@ -61,7 +62,8 @@ export const createDataSlice: DataStateType = (set, get) => ({
       isSelected: true,
       uid: get().user.uid,
       isCompleted: false,
-    };
+      priority: 3,
+    } as TodoBaseType;
 
     // 保存到 indexedDB
     const status = await DB.add({ id, uid, content });

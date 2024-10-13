@@ -1,15 +1,29 @@
 import type { StateCreator } from "zustand";
 
 export type TodoBaseType = {
+  // 唯一id，保存时自动生成
   id: string;
+  // 主题
   title: string;
+  // 时间
   time: string;
+  // lexical内容
   content: string;
+  // 标签
   tagsId: string[];
+  // 是否同步到云端
   isCloudSynced: boolean;
+  // 是否选中
   isSelected: boolean;
+  // 创建人
   uid: string;
+  // 是否已完成
   isCompleted: boolean;
+  /**
+   * @description 优先级
+   * @example 1:重要不紧急; 2:重要且紧急; 3:不重要不紧急; 4:不重要紧急;
+   * */
+  priority: number;
 };
 
 export type TempTodoType = Pick<TodoBaseType, "title" | "time" | "content" | "tagsId" | "id">;
@@ -118,7 +132,7 @@ export type DataSlice = {
   save_tempTodo: () => Promise<{ status: boolean; msg: string }>;
 
   /**
-   * @description 更新 notificationScope 
+   * @description 更新 notificationScope
    * */
   update_notificationScope: (value: number) => void;
 
@@ -141,7 +155,7 @@ export type DataSlice = {
 
   /**
    * @description 将选中的 todo 的 isCompleted 状态取反
-   * */ 
+   * */
   toggle_todoCompleted: () => void;
 
   // ================== 仅用于 /board 页面 ==================

@@ -9,12 +9,14 @@ import Search from "@/components/ui/search";
 import ThemeButton from "@/components/ui/theme-button";
 import Sidebar, { type MenuItemProps } from "@/components/ui/sidebar";
 import TodoIcon from "@/assets/svg/todo.svg?react";
+import Area4Icon from "@/assets/svg/area4.svg?react";
 import CalendarIcon from "@/assets/svg/calendar.svg?react";
 import BoardsIcon from "@/assets/svg/boards.svg?react";
 import SettingsIcon from "@/assets/svg/settings.svg?react";
 
 const Menus: MenuItemProps[] = [
   { path: "/todo", Icon: TodoIcon, title: "待办清单" },
+  { path: "/area", Icon: Area4Icon, title: "四象限" },
   { path: "/boards", Icon: BoardsIcon, title: "看板" },
   { path: "/calendar", Icon: CalendarIcon, title: "日历" },
   { path: "/settings", Icon: SettingsIcon, title: "设置" },
