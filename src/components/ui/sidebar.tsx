@@ -20,18 +20,24 @@ const MenuItem = memo<MenuItemProps>(({ path, title, Icon }) => {
 
   const { isCollapsed } = useContext(StyleContext)!;
 
-  return (
+  const Item = (
+    <div
+      onClick={() => {
+        navigate!(path);
+      }}
+      className="my-1 flex h-12 w-full cursor-pointer select-none items-center gap-2 rounded-lg py-2 transition-colors hover:bg-default-300/50 dark:hover:bg-default-200/40"
+    >
+      <Icon className={cn("size-5 min-h-5 min-w-5 fill-default-500", isCollapsed ? "mx-4" : "ml-4 mr-1")} />
+      {!isCollapsed && <span className="truncate text-default-500">{title}</span>}
+    </div>
+  );
+
+  return isCollapsed ? (
     <Tooltip content={title} placement="right">
-      <div
-        onClick={() => {
-          navigate!(path);
-        }}
-        className="my-1 flex h-12 w-full cursor-pointer select-none items-center gap-2 rounded-lg py-2 transition-colors hover:bg-default-300/50 dark:hover:bg-default-200/40"
-      >
-        <Icon className={cn("size-5 min-h-5 min-w-5 fill-default-500", isCollapsed ? "mx-4" : "ml-4 mr-1")} />
-        {!isCollapsed && <span className="truncate text-default-500">{title}</span>}
-      </div>
+      {Item}
     </Tooltip>
+  ) : (
+    Item
   );
 });
 
