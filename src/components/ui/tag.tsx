@@ -1,11 +1,10 @@
 import { memo, useEffect, useState } from "react";
-import { Button, cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import { TagType, useStore } from "@/store";
 import type { Selection } from "@nextui-org/react";
 import type OverlayPlacement from "@nextui-org/aria-utils";
 
 import AddIcon from "@/assets/svg/add.svg?react";
-import FilterIcon from "@/assets/svg/filter.svg?react";
 
 export const TagCircle = memo<{ color?: string; className?: string }>(({ color, className }) => {
   return (
@@ -26,42 +25,15 @@ export const Tag = memo<{
   return (
     <div
       className={cn(
-        "flex w-fit min-w-fit select-none items-center gap-2 rounded-full border border-default-200 bg-default-100/50 px-2 py-1 transition-colors dark:border-default-100",
+        "flex items-center gap-2",
+        "w-fit min-w-fit select-none rounded-full border px-2 py-1 transition-colors",
+        "border-default-200 bg-default-100/50 dark:border-default-100",
         classNames?.base,
       )}
     >
       <TagCircle color={tag.color} className={classNames?.icon} />
       <span className={cn("text-xs text-default-500 dark:text-default-500/80", classNames?.text)}>{tag.title}</span>
     </div>
-  );
-});
-
-export const TagFilter = memo<{ onAction: (key: TagType["id"]) => void }>(({ onAction }) => {
-  const tags = useStore((state) => state.tags);
-
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
-
-  return (
-    <Dropdown classNames={{ content: "min-w-fit" }}>
-      <DropdownTrigger>
-        <Button isIconOnly size="sm" variant="light">
-          <FilterIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        variant="flat"
-        selectionMode="single"
-        selectedKeys={selectedKeys}
-        onSelectionChange={(keys) => {
-          setSelectedKeys(keys);
-          onAction(Array.from(keys)[0] as string);
-        }}
-      >
-        {tags.map((tag) => (
-          <DropdownItem key={tag.id} title={tag.title} startContent={<TagCircle color={tag.color} />} />
-        ))}
-      </DropdownMenu>
-    </Dropdown>
   );
 });
 
@@ -89,7 +61,7 @@ export const TagSelector = memo<{
             <Tag tag={TagButton} />
           ) : (
             <div className="rounded-full border-2 border-default-200 p-[2px]">
-              <AddIcon className="size-5 fill-default-400" />
+              <AddIcon className="size-4 fill-default-400" />
             </div>
           )}
         </button>

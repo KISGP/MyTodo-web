@@ -11,10 +11,11 @@ import { DragDropContext, Droppable, Draggable, type DraggableProvided } from "@
 
 import useToast from "@/hooks/useToast";
 import LexicalEditor from "@/components/ui/editor";
+import TodoFilter from "@/components/ui/todo-filter";
 import { throttle, formatDateString } from "@/lib/utils";
 import { useStore, type TodoItemType, type DataSlice } from "@/store";
-import { TagSelector, Tag, TagFilter } from "@/components/ui/tag.tsx";
-import PrioritySelector from "@/components/ui/priority-selector";
+import { TagSelector, Tag } from "@/components/ui/tag";
+import { PrioritySelector, Priority } from "@/components/ui/priority";
 
 import DragIcon from "@/assets/svg/drag.svg?react";
 import Trash from "@/assets/svg/trash.svg?react";
@@ -58,7 +59,7 @@ const TodoEditor = memo(() => {
         />
       </div>
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
-        <LexicalEditor toolbar action classNames={{ contentEditable: "h-[calc(100vh_-_259px)]" }} />
+        <LexicalEditor toolbar action classNames={{ contentEditable: "h-[calc(100vh_-_252px)]" }} />
         <div className="flex items-center gap-2 px-2">
           <PrioritySelector
             onAction={(key) => {
@@ -102,7 +103,8 @@ const ListItem = memo<{
   provided: DraggableProvided;
   update_todo: DataSlice["update_todo"];
   change_tempTodo: DataSlice["change_tempTodo"];
-}>(({ item, style, provided, isDragging, update_todo, change_tempTodo }) => {
+  tagStyle?: string;
+}>(({ item, style, provided, isDragging, update_todo, change_tempTodo, tagStyle }) => {
   return (
     <div
       ref={provided.innerRef}
@@ -115,13 +117,14 @@ const ListItem = memo<{
     >
       <div
         className={cn(
-          "h-[72px] w-full rounded-xl px-3",
-          "flex flex-row items-center justify-between overflow-hidden transition-colors",
-          "bg-default-50 hover:bg-default-100 dark:bg-default-100 dark:hover:bg-default-300/50",
+          "h-16 w-full rounded-lg px-3",
+          "flex flex-row items-center justify-between border transition-colors",
+          "border-default-200 bg-default-50 hover:bg-default-100 dark:border-transparent dark:bg-default-100 dark:hover:bg-default-300/50",
           isDragging ? "shadow-md" : "",
           item.isSelected ? "!bg-primary-100" : "",
         )}
       >
+        <div className={`absolute left-0 h-10 w-0 rounded-md border-2 ${tagStyle ?? "border-default-300"}`}></div>
         <div className="flex w-[70%] items-center">
           <Checkbox
             isSelected={item.isSelected}
@@ -170,9 +173,27 @@ const TodoList = memo(() => {
   const myToast = useToast(notificationScope);
 
   // 根据标签筛选 todo
-  const [list, tags] = useStore((state) => [state.todos, state.tags]);
-  const [selectedTag, setSelectedTag] = useState<string>();
-  const activeList = list.filter((item) => (selectedTag ? item.tagsId.includes(selectedTag) : true));
+  const [list, tags, prioritys] = useStore((state) => [state.todos, state.tags, state.prioritys]);
+  const [filter, setFilter] = useState<{ type: string; id: string } | null>(null);
+  const activeList = list.filter((item) => {
+    if (!filter) return true;
+
+    if (filter.type === "priority") {
+      return item.priority === parseInt(filter.id);
+    } else {
+      return item.tagsId.includes(filter.id);
+    }
+  });
+
+  let filterTip = null;
+  if (filter) {
+    if (filter.type === "priority") {
+      filterTip = <Priority priority={prioritys.find((item) => item.id === parseInt(filter.id))} />;
+    }
+    if (filter.type === "tag") {
+      filterTip = <Tag tag={tags.find((item) => item.id === filter.id)!} classNames={{ icon: "size-3" }} />;
+    }
+  }
 
   const rowRenderer = useCallback(
     (todoList: TodoItemType[]) =>
@@ -190,6 +211,7 @@ const TodoList = memo(() => {
                 isDragging={snapshot.isDragging}
                 update_todo={update_todo}
                 change_tempTodo={change_tempTodo}
+                tagStyle={tags.find((tag) => tag.id === item.tagsId[0])?.color}
                 style={{
                   ...style,
                   padding: "4px 8px 4px 0",
@@ -210,17 +232,13 @@ const TodoList = memo(() => {
             <Checkbox onValueChange={(value) => toggle_AllTodoSelected(value)} />
             <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
           </div>
-          {tags
-            .filter((tag) => tag.id === selectedTag)
-            .map((tag) => (
-              <Tag tag={tag} classNames={{ icon: "size-3" }} />
-            ))}
+          {filterTip}
         </div>
         <div className="flex gap-1">
-          <TagFilter
-            onAction={(key) => {
+          <TodoFilter
+            onAction={(res) => {
               toggle_AllTodoSelected(false);
-              setSelectedTag(key);
+              setFilter(res);
             }}
           />
 
@@ -268,6 +286,7 @@ const TodoList = memo(() => {
                 style={{ padding: "4px 8px 4px 0" }}
                 update_todo={update_todo}
                 change_tempTodo={change_tempTodo}
+                tagStyle={tags.find((tag) => tag.id === list[rubric.source.index].tagsId[0])?.color}
               />
             )}
           >
@@ -279,7 +298,7 @@ const TodoList = memo(() => {
                       className="scrollbar-hidden hover:scrollbar"
                       width={width}
                       height={height}
-                      rowHeight={80}
+                      rowHeight={72}
                       rowCount={activeList.length}
                       rowRenderer={rowRenderer(activeList)}
                       ref={(ref) => {

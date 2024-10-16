@@ -44,7 +44,9 @@ const Main = memo(() => {
       </header>
 
       <div
-        className={"mr-2 h-[calc(100vh_-_60px)] flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors"}
+        className={
+          "relative mr-2 h-[calc(100vh_-_60px)] flex-grow overflow-hidden rounded-t-2xl bg-content1 transition-colors"
+        }
       >
         <Outlet />
       </div>

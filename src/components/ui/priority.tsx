@@ -1,24 +1,32 @@
 import { memo, useState } from "react";
 import type { Selection } from "@nextui-org/react";
 import { cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
-import { areaData } from "@/constant";
+import { useStore, PriorityType } from "@/store";
 
-const PrioritySelector = memo<{
+export const Priority = memo<{
+  priority?: PriorityType;
+}>(({ priority }) => (
+  <div
+    className={cn("rounded-full border-1 border-default-200 bg-default-100/50 px-2 py-[2px] text-sm", priority?.class)}
+  >
+    {`${priority?.icon} ${priority?.title}`}
+  </div>
+));
+
+export const PrioritySelector = memo<{
   onAction: (key: number) => void;
 }>(({ onAction }) => {
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set(["3"]));
 
-  const selectedPriority = areaData.find((item) => item.id === Array.from(selectedKeys)[0]);
+  const prioritys = useStore((state) => state.prioritys);
+
+  const selectedPriority = prioritys.find((item) => item.id === parseInt(Array.from(selectedKeys)[0] as string));
 
   return (
     <Dropdown placement="top-start">
       <DropdownTrigger>
         <button className="outline-none">
-          <div
-            className={cn("rounded-full border-2 border-default-200 px-2 py-[2px] text-sm", selectedPriority?.class)}
-          >
-            {`${selectedPriority?.icon} ${selectedPriority?.title}`}
-          </div>
+          <Priority priority={selectedPriority} />
         </button>
       </DropdownTrigger>
       <DropdownMenu
@@ -31,9 +39,9 @@ const PrioritySelector = memo<{
           onAction(parseInt(Array.from(keys)[0] as string));
         }}
       >
-        {areaData.map((area) => (
-          <DropdownItem key={area.id}>
-            <span className={area.class}>{`${area.icon} ${area.title}`}</span>
+        {prioritys.map((priority) => (
+          <DropdownItem key={priority.id}>
+            <span className={priority.class}>{`${priority.icon} ${priority.title}`}</span>
           </DropdownItem>
         ))}
       </DropdownMenu>

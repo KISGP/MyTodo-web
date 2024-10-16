@@ -18,28 +18,28 @@ const useToast = (notificationScope: number) => {
    * 2: 一些不重要的成功类型的消息
    * */
 
-  const isNotify = (messagePriority?: number) =>
+  const isNotify = (messagePriority?: 1 | 2) =>
     (messagePriority && messagePriority <= notificationScope) || (!messagePriority && 2 <= notificationScope);
 
-  const myToast = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+  const myToast = (message: string, options?: ToastOptions & { messagePriority?: 1 | 2 }) => {
     if (isNotify(options?.messagePriority)) {
       toast(message, { style, ...options });
     }
   };
 
-  myToast.error = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+  myToast.error = (message: string, options?: ToastOptions & { messagePriority?: 1 | 2 }) => {
     if (isNotify(options?.messagePriority)) {
       toast.error(message, { style, ...options });
     }
   };
 
-  myToast.warning = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+  myToast.warning = (message: string, options?: ToastOptions & { messagePriority?: 1 | 2 }) => {
     if (isNotify(options?.messagePriority)) {
       toast.error(message, { style, icon: "⚠️", ...options });
     }
   };
 
-  myToast.success = (message: string, options?: ToastOptions & { messagePriority?: number }) => {
+  myToast.success = (message: string, options?: ToastOptions & { messagePriority?: 1 | 2 }) => {
     if (isNotify(options?.messagePriority)) {
       toast.success(message, { style, ...options });
     }

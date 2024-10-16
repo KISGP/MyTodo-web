@@ -1,3 +1,5 @@
+import { PriorityType } from "@/store";
+
 export const tagColors: { [key in string]: string } = {
   green: "border-[#1f883d] bg-[#dafbe1] dark:border-[#238636] dark:bg-[#2ea04326]",
   red: "border-[#cf222e] bg-[#ffebe9] dark:border-[#da3633] dark:bg-[#f851491a]",
@@ -12,7 +14,7 @@ export const tags: {
   [key in string]: {
     id: string;
     title: string;
-    description: string;
+    description?: string;
     color: string;
   };
 } = {
@@ -60,34 +62,29 @@ export const tags: {
   },
 };
 
-export const areaData: {
-  icon: string;
-  title: string;
-  id: string;
-  class: string;
-}[] = [
+export const prioritys: PriorityType[] = [
   {
     icon: "😦",
     title: "重要不紧急",
-    id: "1",
+    id: 1,
     class: "text-yellow-400",
   },
   {
     icon: "🤯",
     title: "重要且紧急",
-    id: "2",
+    id: 2,
     class: "text-red-600",
   },
   {
     icon: "😌",
     title: "不重要不紧急",
-    id: "3",
+    id: 3,
     class: "text-green-600",
   },
   {
     icon: "🫤",
     title: "不重要但紧急",
-    id: "4",
+    id: 4,
     class: "text-blue-600",
   },
 ];

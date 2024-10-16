@@ -42,6 +42,13 @@ export type TagType = {
   color: string;
 };
 
+export type PriorityType = {
+  icon: string;
+  title: string;
+  id: 1 | 2 | 3 | 4;
+  class: string;
+};
+
 export type DataSlice = {
   todos: TodoItemType[];
 
@@ -59,6 +66,11 @@ export type DataSlice = {
    * @description 通知范围，可以通知消息优先级小于通知等级的消息。0:不通知; 1:仅通知错误; 2:通知成功和错误
    * */
   notificationScope: number;
+
+  /**
+   * @description todo 的优先级
+   * */
+  prioritys: PriorityType[];
 
   // ================== 数据只能由下面方法修改 ==================
 
@@ -98,7 +110,12 @@ export type DataSlice = {
   /**
    * @description 根据 id 更新 tags
    * */
-  update_tags: (id: string, value: Partial<Omit<TagType, "id">>) => void;
+  update_tag: (id: string, value: Partial<Omit<TagType, "id">>) => void;
+
+  /**
+   * @description 返回更新后的使用 tags
+   * */
+  update_tags: (fn: (tags: TagType[]) => TagType[]) => void;
 
   /**
    * @description 添加自定义 tag

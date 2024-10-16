@@ -14,6 +14,8 @@ import {
   Button,
   useDisclosure,
   DatePicker,
+  DropdownSection,
+  Textarea,
 } from "@nextui-org/react";
 import {
   DragDropContext,
@@ -24,20 +26,33 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 
-import MoreIcon from "@/assets/svg/more.svg?react";
+import useToast from "@/hooks/useToast";
+import LexicalEditor from "@/components/ui/editor";
+import { formatDateString } from "@/lib/utils";
+import { parseDate } from "@internationalized/date";
+import { Tag, TagCircle, TagSelector } from "@/components/ui/tag";
+import { useStore, TagType, TodoItemType } from "@/store";
+import { tagColors } from "@/constant";
+
 import AddIcon from "@/assets/svg/add.svg?react";
 import TagIcon from "@/assets/svg/tag.svg?react";
+import TrashIcon from "@/assets/svg/trash.svg?react";
 import EditIcon from "@/assets/svg/edit.svg?react";
-import DescriptionIcon from "@/assets/svg/description.svg?react";
-import { useStore, TagType, TodoItemType } from "@/store";
-import { TagCircle, TagSelector } from "@/components/ui/tag";
-import LexicalEditor from "@/components/ui/editor";
-import { parseDate } from "@internationalized/date";
-import { formatDateString } from "@/lib/utils";
+import MoreIcon from "@/assets/svg/more.svg?react";
+import HiddenIcon from "@/assets/svg/hidden.svg?react";
 import CalendarIcon from "@/assets/svg/calendar.svg?react";
+import SettingsIcon from "@/assets/svg/settings.svg?react";
+import DescriptionIcon from "@/assets/svg/description.svg?react";
+
+type newTagType = (Partial<TagType> | null) & { type: "edit" | "add" };
 
 // Modal 上下文 (用于在拖拽列内的 todo 中打开 Modal)
-const EditModalContext = createContext<{ onOpen: () => void } | null>(null);
+const ModalContext = createContext<{
+  openEditorModal: () => void;
+  openCreatorModal: () => void;
+  creatorModalData: newTagType;
+  setCreatorModalData: (tag: newTagType) => void;
+} | null>(null);
 
 // Modal 组件 (用于编辑 todo)
 const EditorModal = memo<{ isOpen: boolean; onOpenChange: () => void }>(({ isOpen, onOpenChange }) => {
@@ -112,10 +127,163 @@ const EditorModal = memo<{ isOpen: boolean; onOpenChange: () => void }>(({ isOpe
   );
 });
 
+// Modal 组件 (用于编辑标签)
+const CreatorModal = memo<{ isOpen: boolean; onOpenChange: () => void }>(({ isOpen, onOpenChange }) => {
+  const { creatorModalData, setCreatorModalData } = useContext(ModalContext)!;
+
+  const [update_tag, add_tag, notificationScope] = useStore((state) => [
+    state.update_tag,
+    state.add_tag,
+    state.notificationScope,
+  ]);
+
+  const myToast = useToast(notificationScope);
+
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">{`${creatorModalData.type === "edit" ? "修改" : "添加"}标签`}</ModalHeader>
+            <ModalBody>
+              <div className="w-full overflow-hidden rounded-lg border border-default-100 py-5">
+                <Tag
+                  tag={{ title: creatorModalData?.title || "text", color: creatorModalData?.color }}
+                  classNames={{ base: "mx-auto scale-150" }}
+                />
+              </div>
+              <div className="flex items-center gap-1">
+                <span>colors：</span>
+                {Object.keys(tagColors).map((key) => (
+                  <Button
+                    isIconOnly
+                    variant="light"
+                    key={key}
+                    onPress={() => setCreatorModalData({ ...creatorModalData, color: tagColors[key] })}
+                  >
+                    <TagCircle color={tagColors[key]} />
+                  </Button>
+                ))}
+              </div>
+              <Input
+                radius="sm"
+                variant="flat"
+                placeholder="标签标题"
+                value={creatorModalData?.title}
+                onValueChange={(value) => setCreatorModalData({ ...creatorModalData, title: value.trim() })}
+              />
+              <Textarea
+                radius="sm"
+                placeholder="标签描述"
+                value={creatorModalData?.description}
+                onValueChange={(value) => setCreatorModalData({ ...creatorModalData, description: value.trim() })}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="light" onPress={onClose}>
+                取消
+              </Button>
+              <Button
+                color="primary"
+                onPress={() => {
+                  if (creatorModalData?.title && creatorModalData?.color) {
+                    if (creatorModalData.type === "edit") {
+                      // 修改标签
+                      update_tag(creatorModalData.id!, {
+                        color: creatorModalData.color,
+                        title: creatorModalData.title,
+                        description: creatorModalData.description,
+                      });
+                    } else {
+                      // 添加标签
+                      add_tag({
+                        color: creatorModalData.color,
+                        title: creatorModalData.title,
+                        description: creatorModalData.description,
+                      });
+                    }
+
+                    onClose();
+                  } else {
+                    myToast.error("标题和颜色不能为空", { messagePriority: 1 });
+                  }
+                }}
+              >
+                {`${creatorModalData.type === "edit" ? "保存" : "添加"}`}
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+});
+
+// 看板设置
+const BoardSettings = memo(() => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { openCreatorModal, setCreatorModalData } = useContext(ModalContext)!;
+
+  const [tags, update_tags] = useStore((state) => [state.tags, state.update_tags]);
+
+  const selectedTags = new Set(tags.map((item) => !item.isHidden && item.id).filter((v) => Boolean(v)) as string[]);
+
+  return (
+    <Dropdown isOpen={isOpen} onOpenChange={setIsOpen} closeOnSelect={false}>
+      <DropdownTrigger>
+        <Button isIconOnly size="sm" variant="flat" className="group absolute right-3 top-3">
+          <SettingsIcon className="size-4 fill-default-500 group-hover:fill-primary-500" />
+        </Button>
+      </DropdownTrigger>
+      <DropdownMenu
+        variant="flat"
+        selectionMode="multiple"
+        selectedKeys={selectedTags}
+        onSelectionChange={(keys) => {
+          const selectedKeys = Array.from(keys) as string[];
+
+          // 添加标签
+          if (selectedKeys[selectedKeys.length - 1] == "add") {
+            setCreatorModalData({ type: "add" });
+            openCreatorModal();
+            setIsOpen(false);
+          }
+
+          // 显示/隐藏 标签
+          update_tags((tags) => {
+            return tags.map((tag) => {
+              if (selectedKeys.includes(tag.id)) {
+                return { ...tag, isHidden: false };
+              } else {
+                return { ...tag, isHidden: true };
+              }
+            });
+          });
+        }}
+      >
+        <DropdownSection showDivider>
+          <DropdownItem
+            key="add"
+            title="添加标签"
+            startContent={<AddIcon className="size-4 fill-default-800/80 dark:fill-default-400/80" />}
+          />
+        </DropdownSection>
+
+        <DropdownSection title="显示/隐藏 标签">
+          {tags.map((tag) => (
+            <DropdownItem key={tag.id} title={tag.title} startContent={<TagCircle color={tag.color} />} />
+          ))}
+        </DropdownSection>
+      </DropdownMenu>
+    </Dropdown>
+  );
+});
+
 // 拖拽列内的 todo
 const Item = memo<{ provided: DraggableProvided; snapshot: DraggableStateSnapshot; item: TodoItemType }>(
   ({ provided, snapshot, item }) => {
-    const { onOpen } = useContext(EditModalContext)!;
+    const { openEditorModal } = useContext(ModalContext)!;
     const [change_tempTodo] = useStore((state) => [state.change_tempTodo]);
 
     return (
@@ -144,7 +312,7 @@ const Item = memo<{ provided: DraggableProvided; snapshot: DraggableStateSnapsho
               // 设置 Modal 显示的数据
               change_tempTodo(item.id);
               // 打开 Modal
-              onOpen();
+              openEditorModal();
             }}
           >
             <EditIcon className="size-4 fill-default-400" />
@@ -162,7 +330,14 @@ const Column = memo<{
 }>(({ index, columnData }) => {
   const [inputValue, setInputValue] = useState("");
   const [isCreateItem, setIsCreateItem] = useState(false);
-  const [save_item, update_tags] = useStore((state) => [state.save_item, state.update_tags]);
+
+  const { openCreatorModal, setCreatorModalData } = useContext(ModalContext)!;
+
+  const [save_item, update_tag, delete_tag] = useStore((state) => [
+    state.save_item,
+    state.update_tag,
+    state.delete_tag,
+  ]);
 
   return (
     <Draggable draggableId={columnData.id} index={index}>
@@ -181,22 +356,52 @@ const Column = memo<{
               <TagCircle color={columnData.color} />
               <span className="inline-block select-none font-semibold text-default-500">{columnData.title}</span>
             </div>
-            <Dropdown>
-              <DropdownTrigger>
-                <div className="cursor-pointer rounded-lg p-1 hover:bg-default-100">
-                  <MoreIcon className="size-6 fill-default-800/80 dark:fill-default-400/80" />
-                </div>
-              </DropdownTrigger>
-              <DropdownMenu variant="flat" aria-label="Dropdown menu">
-                <DropdownItem key="new" onClick={() => update_tags(columnData.id, { isHidden: true })}>
-                  隐藏
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            {columnData.id !== "NoTag" && (
+              <Dropdown>
+                <DropdownTrigger>
+                  <div className="cursor-pointer rounded-lg p-1 hover:bg-default-100">
+                    <MoreIcon className="size-6 fill-default-800/80 dark:fill-default-400/80" />
+                  </div>
+                </DropdownTrigger>
+                <DropdownMenu variant="flat" aria-label="TagSettings">
+                  <DropdownItem
+                    key="edit"
+                    title="修改"
+                    startContent={<EditIcon className="size-4 fill-default-400" />}
+                    onClick={() => {
+                      setCreatorModalData({
+                        type: "edit",
+                        id: columnData.id,
+                        color: columnData.color,
+                        title: columnData.title,
+                        description: columnData.description,
+                      });
+                      openCreatorModal();
+                    }}
+                  />
+                  <DropdownItem
+                    key="new"
+                    title="隐藏"
+                    startContent={<HiddenIcon className="size-4 fill-default-400" />}
+                    onClick={() => update_tag(columnData.id, { isHidden: true })}
+                  />
+                  <DropdownItem
+                    key="delete"
+                    title="删除"
+                    color="danger"
+                    className="text-danger"
+                    startContent={<TrashIcon className="size-4 fill-default-400" />}
+                    onClick={() => delete_tag(columnData.id, false)}
+                  />
+                </DropdownMenu>
+              </Dropdown>
+            )}
           </div>
 
+          {/* 标签描述 */}
           <span className="select-none px-2 text-sm text-default-500/50">{columnData.description}</span>
 
+          {/* todo 列表 */}
           <Droppable droppableId={columnData.id} key={columnData.id}>
             {(provided) => (
               <div
@@ -214,6 +419,7 @@ const Column = memo<{
             )}
           </Droppable>
 
+          {/* 创建 todo */}
           <div
             onClick={() => setIsCreateItem(true)}
             className={cn(
@@ -305,10 +511,20 @@ const Board = memo(() => {
   };
 
   // Modal 数据
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const editorModal = useDisclosure();
+  const creatorModal = useDisclosure();
+
+  const [creatorModalData, setCreatorModalData] = useState<newTagType>({ type: "add" });
 
   return (
-    <EditModalContext.Provider value={{ onOpen }}>
+    <ModalContext.Provider
+      value={{
+        openEditorModal: editorModal.onOpen,
+        openCreatorModal: creatorModal.onOpen,
+        creatorModalData,
+        setCreatorModalData,
+      }}
+    >
       {/* 拖拽列 */}
       <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
         <Droppable droppableId="board" type="COLUMN" direction="horizontal">
@@ -317,19 +533,24 @@ const Board = memo(() => {
               ref={provided.innerRef}
               {...provided.droppableProps}
               // FIXME: react-beautiful-dnd 不支持嵌套滚动，但不影响使用
-              className="scrollbar flex size-full overflow-x-auto overflow-y-hidden px-1 py-3"
+              className="scrollbar flex size-full overflow-x-auto overflow-y-hidden px-1 py-3 pr-16"
             >
               {boardColumns.map((column, index) => (
                 <Column key={column.id} columnData={column} index={index} />
               ))}
+
               {provided.placeholder}
             </div>
           )}
         </Droppable>
       </DragDropContext>
 
-      <EditorModal isOpen={isOpen} onOpenChange={onOpenChange} />
-    </EditModalContext.Provider>
+      <BoardSettings />
+
+      <CreatorModal isOpen={creatorModal.isOpen} onOpenChange={creatorModal.onOpenChange} />
+
+      <EditorModal isOpen={editorModal.isOpen} onOpenChange={editorModal.onOpenChange} />
+    </ModalContext.Provider>
   );
 });
 

@@ -1,7 +1,7 @@
 import IndexedDBHelper from "@/lib/indexedDB";
 import { generateLocalID, readFile } from "@/lib/utils";
 import { DataStateType, TagType, userType } from "./type";
-import { tags } from "@/constant";
+import { tags, prioritys } from "@/constant";
 import { TodoBaseType } from "./type";
 
 const DB = new IndexedDBHelper();
@@ -53,6 +53,8 @@ export const createDataSlice: DataStateType = (set, get) => ({
   tempTodo: defaultTodo,
 
   notificationScope: 1,
+
+  prioritys,
 
   save_todo: async (value) => {
     // 为新的 todo 添加一些必要的属性
@@ -158,9 +160,15 @@ export const createDataSlice: DataStateType = (set, get) => ({
     return { content: res.content, ...todo };
   },
 
-  update_tags: (id, value) => {
+  update_tag: (id, value) => {
     set((state) => {
       state.tags = state.tags.map((item) => (item.id === id ? { ...item, ...value } : item));
+    });
+  },
+
+  update_tags: (fn) => {
+    set((state) => {
+      state.tags = fn(state.tags);
     });
   },
 

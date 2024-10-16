@@ -7,7 +7,7 @@ import { useStore } from "@/store";
 const Avatar = memo(() => {
   const navigate = useNavigate();
 
-  const [quit, exportData,importData] = useStore((state) => [state.quit, state.export,state.import]);
+  const [quit, exportData, importData] = useStore((state) => [state.quit, state.export, state.import]);
 
   return (
     <Dropdown placement="bottom-start">

@@ -1,6 +1,6 @@
 import lunisolar from "lunisolar";
 import { formatDateString } from "@/lib/utils";
-import { cn, Divider } from "@nextui-org/react";
+import { cn } from "@nextui-org/react";
 import { memo, useState } from "react";
 import { useStore, TodoItemType, TagType } from "@/store";
 
@@ -15,7 +15,7 @@ type DateItem = {
 };
 
 const generateMonthCalendar: (date: Date) => Omit<DateItem, "todo">[] = (date) => {
-  const dates: DateItem[] = [];
+  let dates: DateItem[] = [];
 
   // 设输入的date为当前日期
 
@@ -70,6 +70,10 @@ const generateMonthCalendar: (date: Date) => Omit<DateItem, "todo">[] = (date) =
       isLastOrNextMonth: true,
       solarTerm: lunarDate.solarTerm?.toString(),
     });
+  }
+
+  if (dates[35].isLastOrNextMonth) {
+    dates = dates.slice(0, 35);
   }
 
   // 标记当前日期
@@ -141,7 +145,9 @@ const Calendar = memo(() => {
   return (
     <div className="scrollbar flex size-full flex-col overflow-y-auto p-2">
       <div className="flex h-12 w-full">
-        <h2 className="text-xl">{currentDate.toLocaleDateString("default", { month: "long", year: "numeric" })}</h2>
+        <h2 className="px-2 py-1 text-xl font-semibold">
+          {currentDate.toLocaleDateString("default", { month: "long", year: "numeric" })}
+        </h2>
       </div>
       <div className="grid grid-cols-7 gap-2">
         {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((item, index) => (
@@ -150,10 +156,12 @@ const Calendar = memo(() => {
           </div>
         ))}
       </div>
-      <Divider className="mb-2" />
-      <div className="grid flex-grow grid-cols-7 grid-rows-6 gap-2">
+      <div className={`grid flex-grow grid-cols-7 gap-2 grid-rows-${dates.length / 7}`}>
         {dates.map((date) => (
-          <div key={date.formateDate} className="relative overflow-hidden rounded-lg bg-content2/50 transition-colors">
+          <div
+            key={date.formateDate}
+            className="relative overflow-hidden border-t border-default-300 transition-colors"
+          >
             <DayCard day={date} tags={tags} />
             {date.isLastOrNextMonth && (
               <div
