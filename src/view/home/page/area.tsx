@@ -27,7 +27,7 @@ const Quadrant = memo<{ item: PriorityType }>(({ item }) => {
           {data.map((todo) => (
             <div
               key={todo.id}
-              className={`my-1 flex w-full items-center justify-between rounded-md bg-content3/30 px-2 py-1`}
+              className={`my-1 flex w-full items-center justify-between rounded-md border-1 border-transparent bg-content3/30 px-2 py-1 hover:border-default-200`}
             >
               <span className="text-default-600">{todo.title}</span>
               <span className="text-sm text-default-400">{todo.time}</span>

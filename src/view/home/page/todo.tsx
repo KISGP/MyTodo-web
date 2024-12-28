@@ -43,7 +43,7 @@ const TodoEditor = memo(() => {
           type="text"
           placeholder="主题"
           value={title || ""}
-          className="h-3/4 flex-grow rounded-xl bg-transparent px-4 text-2xl font-semibold caret-default-500 outline-none placeholder:text-default-300"
+          className="h-3/4 flex-grow rounded-lg bg-transparent px-4 text-2xl font-semibold caret-default-500 outline-none placeholder:text-default-300"
           onChange={(e) => update_tempTodo({ title: e.target.value })}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             e.key === "Enter" && myToast.auto(save_tempTodo());

@@ -84,27 +84,33 @@ const generateMonthCalendar: (date: Date) => Omit<DateItem, "todo">[] = (date) =
 
 const DayCard = memo<{ day: DateItem; tags: TagType[] }>(({ day, tags }) => {
   return (
-    <div className="group size-full p-1">
+    <div className="group size-full select-none p-1">
       <div
         className={cn(
           "flex items-center justify-between text-lg font-semibold",
           day.isLastOrNextMonth && "brightness-50",
         )}
       >
+        {/* 月份日期 */}
         {day.isLastOrNextMonth ? (
-          <div className={day.isCurrentDay ? "rounded-lg bg-primary-400/90 px-2 dark:bg-primary-400" : ""}>
+          <span className={cn(day.isCurrentDay && "rounded-lg bg-primary-400/90 px-2 dark:bg-primary-400")}>
             {day.date.getMonth() + 1}月{day.date.getDate()}号
-          </div>
+          </span>
         ) : (
-          <div className={cn("size-8 rounded-full", day.isCurrentDay && "bg-primary-400/90 dark:bg-primary-400")}>
-            <p className="size-8 text-center leading-[32px]">
-              {day.isLastOrNextMonth ? `${day.date.getMonth() + 1}月${day.date.getDate()}号` : day.date.getDate()}
-            </p>
+          <div className={cn("size-8 rounded-full", day.isCurrentDay && "bg-primary-300/90 dark:bg-primary-300")}>
+            <p className="size-8 text-center leading-[32px]">{day.date.getDate()}</p>
           </div>
         )}
+        {/* 农历 和 节气 */}
         <div className="flex flex-col items-center font-thin text-default-500/80">
-          <span className="text-sm">{day.lunarDate}</span>
-          {day.solarTerm && <span className="text-xs text-primary-400 dark:text-primary-300">{day.solarTerm}</span>}
+          {Boolean(day.solarTerm) ? (
+            <>
+              <span className="text-xs">{day.lunarDate}</span>
+              <span className="text-xs text-primary-400 dark:text-primary-300">{day.solarTerm}</span>
+            </>
+          ) : (
+            <span className="text-sm">{day.lunarDate}</span>
+          )}
         </div>
       </div>
       {
@@ -156,7 +162,7 @@ const Calendar = memo(() => {
           </div>
         ))}
       </div>
-      <div className={`grid flex-grow grid-cols-7 gap-2 grid-rows-${dates.length / 7}`}>
+      <div className={`grid flex-grow grid-cols-7 gap-1 grid-rows-${dates.length / 7}`}>
         {dates.map((date) => (
           <div
             key={date.formateDate}
@@ -165,7 +171,7 @@ const Calendar = memo(() => {
             <DayCard day={date} tags={tags} />
             {date.isLastOrNextMonth && (
               <div
-                className="absolute bottom-0 left-0 right-0 top-0 size-full cursor-pointer rounded-lg backdrop-brightness-75 backdrop-opacity-30 dark:backdrop-opacity-60"
+                className="absolute bottom-0 left-0 right-0 top-0 size-full cursor-pointer backdrop-brightness-75 backdrop-opacity-30 dark:backdrop-opacity-60"
                 onClick={() => setCurrentDate(date.date)}
               />
             )}
