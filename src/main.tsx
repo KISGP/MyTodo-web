@@ -11,6 +11,7 @@ import routes, { RouterGuard } from "@/routes";
 import { useStore } from "./store";
 
 import "@/styles/index.css";
+import 'css-doodle';
 
 const App = memo(() => {
   const notificationScope = useStore((state) => state.notificationScope);
