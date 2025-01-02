@@ -96,7 +96,12 @@ const EditorModal = memo<{ isOpen: boolean; onOpenChange: () => void }>(({ isOpe
                     value={parseDate(tempTodo.time)}
                     classNames={{ base: "w-fit" }}
                     dateInputClassNames={{ inputWrapper: "shadow-none" }}
-                    onChange={({ year, month, day }) => update_tempTodo({ time: formatDateString(year, month, day) })}
+                    onChange={(date) => {
+                      if (date) {
+                        const { year, month, day } = date;
+                        update_tempTodo({ time: formatDateString(year, month, day) });
+                      }
+                    }}
                   />
                 </div>
                 <div className="flex w-full items-center gap-2">

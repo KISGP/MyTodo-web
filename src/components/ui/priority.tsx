@@ -1,6 +1,7 @@
 import { memo, useState } from "react";
 import type { Selection } from "@nextui-org/react";
 import { cn, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { OverlayPlacement } from "@nextui-org/aria-utils";
 import { useStore, PriorityType } from "@/store";
 
 export const Priority = memo<{
@@ -15,15 +16,17 @@ export const Priority = memo<{
 
 export const PrioritySelector = memo<{
   onAction: (key: number) => void;
-}>(({ onAction }) => {
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set(["3"]));
+  placement?: OverlayPlacement;
+  defaultPriority?: number;
+}>(({ onAction, placement, defaultPriority }) => {
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([defaultPriority ?? "3"]));
 
   const prioritys = useStore((state) => state.prioritys);
 
   const selectedPriority = prioritys.find((item) => item.id === parseInt(Array.from(selectedKeys)[0] as string));
 
   return (
-    <Dropdown placement="top-start">
+    <Dropdown placement={placement || "top-start"}>
       <DropdownTrigger>
         <button className="outline-none">
           <Priority priority={selectedPriority} />

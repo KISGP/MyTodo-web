@@ -55,7 +55,12 @@ const TodoEditor = memo(() => {
           value={parseDate(time)}
           classNames={{ base: "w-fit" }}
           dateInputClassNames={{ inputWrapper: "shadow-none" }}
-          onChange={({ year, month, day }) => update_tempTodo({ time: formatDateString(year, month, day) })}
+          onChange={(date) => {
+            if (date) {
+              const { year, month, day } = date;
+              update_tempTodo({ time: formatDateString(year, month, day) });
+            }
+          }}
         />
       </div>
       <div className="relative w-full rounded-xl border border-default-200 py-2 text-left text-base font-normal transition-colors dark:border-default-100 dark:text-default-500/80">
@@ -64,8 +69,10 @@ const TodoEditor = memo(() => {
           <PrioritySelector
             onAction={(key) => {
               update_tempTodo({ priority: key });
+              console.log(id);
               id &&
                 save_tempTodo().then(({ status }) => {
+                  console.log(status);
                   if (status) {
                     myToast.success("更新优先级成功", { messagePriority: 2 });
                   } else {
@@ -230,7 +237,7 @@ const TodoList = memo(() => {
         <div className="flex items-center gap-2">
           <div>
             <Checkbox onValueChange={(value) => toggle_AllTodoSelected(value)} />
-            <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">清单列表</span>
+            <span className="ml-1 select-none truncate text-xl font-bold text-foreground/70">列表</span>
           </div>
           {filterTip}
         </div>
